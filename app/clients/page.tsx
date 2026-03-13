@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabase';
 import { UserPlus, Building2, X, Loader2, Users, Trash2 } from 'lucide-react';
@@ -16,6 +17,7 @@ type Client = {
 const STATUS_OPTIONS = ['Active', 'Inactive', 'Prospect'];
 
 export default function ClientsPage() {
+  const router = useRouter();
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
@@ -178,10 +180,15 @@ export default function ClientsPage() {
               </thead>
               <tbody className="divide-y divide-slate-200">
                 {clients.map((client) => (
-                  <tr key={client.id} className="transition-colors hover:bg-slate-50">
+                  <tr
+                    key={client.id}
+                    onClick={() => router.push(`/clients/${client.id}`)}
+                    className="cursor-pointer transition-colors hover:bg-gray-50"
+                  >
                     <td className="whitespace-nowrap px-6 py-4">
                       <Link
                         href={`/clients/${client.id}`}
+                        onClick={(e) => e.stopPropagation()}
                         className="font-medium text-slate-900 hover:text-indigo-600 hover:underline"
                       >
                         {client.name}
@@ -203,10 +210,11 @@ export default function ClientsPage() {
                         {client.status}
                       </span>
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-right">
+                    <td className="whitespace-nowrap px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-2">
                         <Link
                           href={`/clients/${client.id}`}
+                          onClick={(e) => e.stopPropagation()}
                           className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
                         >
                           <Building2 className="h-4 w-4" />
@@ -214,7 +222,10 @@ export default function ClientsPage() {
                         </Link>
                         <button
                           type="button"
-                          onClick={() => handleDelete(client.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(client.id);
+                          }}
                           className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600"
                           title="Delete client"
                         >
