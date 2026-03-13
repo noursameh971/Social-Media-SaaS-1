@@ -46,12 +46,6 @@ export default function AssetsPage() {
     file: null as File | null,
   });
 
-  useEffect(() => {
-    if (!uploadToast) return;
-    const t = setTimeout(() => setUploadToast(false), 3000);
-    return () => clearTimeout(t);
-  }, [uploadToast]);
-
   async function fetchAssets() {
     const { data, error: fetchError } = await supabase
       .from('brand_files')
