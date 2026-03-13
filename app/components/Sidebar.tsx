@@ -65,6 +65,7 @@ export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [globalAgencyName, setGlobalAgencyName] = useState("Social Media OS");
   const [globalLogo, setGlobalLogo] = useState("");
+  const [logoError, setLogoError] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
