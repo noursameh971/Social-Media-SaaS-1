@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabase';
-import { UserPlus, Building2, X, Loader2, Users, Trash2 } from 'lucide-react';
+import { UserPlus, Building2, X, Loader2, Users, Trash2, AlertTriangle } from 'lucide-react';
 
 type Client = {
   id: string;
@@ -23,6 +23,7 @@ export default function ClientsPage() {
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [clientToDelete, setClientToDelete] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: '',
     industry: '',
@@ -60,7 +61,6 @@ export default function ClientsPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!window.confirm('Are you sure you want to delete this client? This cannot be undone.')) return;
     try {
       const { error } = await supabase.from('clients').delete().eq('id', id);
       if (error) throw error;
@@ -68,6 +68,8 @@ export default function ClientsPage() {
       toast.success('Client deleted successfully');
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to delete client');
+    } finally {
+      setClientToDelete(null);
     }
   }
 
@@ -224,7 +226,7 @@ export default function ClientsPage() {
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleDelete(client.id);
+                            setClientToDelete(client.id);
                           }}
                           className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600"
                           title="Delete client"
@@ -240,6 +242,40 @@ export default function ClientsPage() {
           </div>
         )}
       </div>
+
+      {clientToDelete && (
+        <div className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-gray-900/40 duration-200 backdrop-blur-sm fade-in">
+          <div className="mx-4 w-full max-w-sm rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl duration-200 animate-in zoom-in-95 md:p-8">
+            <div className="mb-2 flex items-center gap-4">
+              <div className="rounded-2xl bg-red-50 p-3 text-red-600">
+                <AlertTriangle size={24} />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Delete Client</h3>
+              </div>
+            </div>
+            <p className="mb-6 mt-2 text-sm text-gray-500">
+              Are you completely sure? This action cannot be undone and will permanently delete this client.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setClientToDelete(null)}
+                className="rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDelete(clientToDelete)}
+                className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-red-200 transition-colors hover:bg-red-700"
+              >
+                Yes, delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
