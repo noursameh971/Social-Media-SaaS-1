@@ -118,15 +118,14 @@ export default function Sidebar() {
         <div className="flex h-16 items-center justify-between gap-3 border-b border-slate-800 px-6">
           <div className="flex min-w-0 flex-1 items-center gap-3">
             {globalLogo && !logoError ? (
-              <img
-                key={globalLogo}
-                src={globalLogo}
-                alt={globalAgencyName}
-                referrerPolicy="no-referrer"
-                crossOrigin="anonymous"
-                onError={() => setLogoError(true)}
-                className="h-8 w-auto max-w-[120px] shrink-0 object-contain"
-              />
+              <div className="h-8 w-[120px] shrink-0">
+                <img
+                  src={globalLogo}
+                  alt="Agency Logo"
+                  className="h-full w-full object-contain"
+                  onError={() => setLogoError(true)}
+                />
+              </div>
             ) : (
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-700/80 text-slate-300">
                 <span className="text-sm font-bold">{globalAgencyName.charAt(0).toUpperCase() || "B"}</span>

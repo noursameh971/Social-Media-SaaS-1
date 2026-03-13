@@ -98,7 +98,7 @@ export default function CampaignsPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.name.trim() || !form.client_id) {
-      alert('Please enter a campaign name and select a client.');
+      toast.error('Please enter a campaign name and select a client.');
       return;
     }
     setSaving(true);
@@ -113,7 +113,7 @@ export default function CampaignsPage() {
       });
       if (insertError) {
         console.error('Supabase Error:', insertError);
-        alert('Error: ' + insertError.message);
+        toast.error('Error: ' + insertError.message);
         return;
       }
       setModalOpen(false);
@@ -121,7 +121,7 @@ export default function CampaignsPage() {
       await fetchCampaigns();
     } catch (err) {
       console.error('Create campaign error:', err);
-      alert(err instanceof Error ? err.message : 'Failed to create campaign');
+      toast.error(err instanceof Error ? err.message : 'Failed to create campaign');
     } finally {
       setSaving(false);
     }

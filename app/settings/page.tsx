@@ -124,8 +124,7 @@ export default function SettingsPage() {
       if (error) throw error;
 
       const filePath = data?.path ?? fileName;
-      const { data: urlData } = supabase.storage.from('logos').getPublicUrl(filePath);
-      const publicUrl = urlData.publicUrl;
+      const { data: { publicUrl } } = supabase.storage.from('logos').getPublicUrl(filePath);
       setLogoUrl(publicUrl);
       setLogoError(false);
       toast.success('Logo uploaded! Click Save to apply.', { id: toastId });
@@ -317,10 +316,9 @@ export default function SettingsPage() {
                       {logoUrl && !logoError && !logoUploading ? (
                         <img
                           src={logoUrl}
-                          alt="Agency logo"
-                          referrerPolicy="no-referrer"
+                          alt="Logo Preview"
+                          className="h-full w-full object-contain rounded-xl"
                           onError={() => setLogoError(true)}
-                          className="h-full w-full object-contain rounded-lg border border-gray-100"
                         />
                       ) : logoUploading ? (
                         <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
