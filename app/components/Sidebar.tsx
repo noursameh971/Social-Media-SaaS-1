@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Menu, X } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: "dashboard" },
@@ -61,6 +62,7 @@ const icons: Record<string, React.ReactNode> = {
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
   const [globalAgencyName, setGlobalAgencyName] = useState("Social Media OS");
   const [globalLogo, setGlobalLogo] = useState("");
 
@@ -76,14 +78,52 @@ export default function Sidebar() {
     }
   }, []);
 
+  const closeSidebar = () => setIsOpen(false);
+
   return (
-    <aside className="fixed left-0 top-0 z-40 h-screen w-[240px] border-r border-slate-800 bg-slate-900">
+    <>
+      {/* Hamburger - mobile only */}
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        className="fixed left-4 top-4 z-[60] flex items-center justify-center rounded-lg border border-slate-700 bg-slate-900 p-2.5 text-white shadow-lg transition-colors hover:bg-slate-800 lg:hidden"
+        aria-label="Open menu"
+      >
+        <Menu className="h-6 w-6" />
+      </button>
+
+      {/* Backdrop - mobile only when open */}
+      {isOpen && (
+        <div
+          role="presentation"
+          onClick={closeSidebar}
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Sidebar - overlay on mobile when open, always visible on lg */}
+      <aside
+        className={`fixed left-0 top-0 z-50 flex h-screen w-[240px] flex-col border-r border-slate-800 bg-slate-900 transition-transform duration-200 ease-out lg:translate-x-0 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:flex`}
+      >
       <div className="flex h-full flex-col">
-        <div className="flex h-16 items-center gap-3 border-b border-slate-800 px-6">
-          {globalLogo ? (
-            <img src={globalLogo} alt={globalAgencyName} className="h-8 w-auto max-w-[120px] object-contain" />
-          ) : null}
-          <span className="text-xl font-semibold text-white">{globalAgencyName}</span>
+        <div className="flex h-16 items-center justify-between gap-3 border-b border-slate-800 px-6">
+          <div className="flex min-w-0 flex-1 items-center gap-3">
+            {globalLogo ? (
+              <img src={globalLogo} alt={globalAgencyName} className="h-8 w-auto max-w-[120px] shrink-0 object-contain" />
+            ) : null}
+            <span className="truncate text-xl font-semibold text-white">{globalAgencyName}</span>
+          </div>
+          <button
+            type="button"
+            onClick={closeSidebar}
+            className="-mr-2 rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white lg:hidden"
+            aria-label="Close menu"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
         <nav className="flex-1 space-y-0.5 px-3 py-4">
           {navItems.map((item) => {
@@ -95,6 +135,7 @@ export default function Sidebar() {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={closeSidebar}
                 className={`flex items-center gap-3 rounded-lg py-2.5 pr-3 pl-3 text-sm font-medium transition-colors ${
                   isActive
                     ? "border-l-2 border-l-indigo-500 bg-slate-800 pl-[10px] text-white"
@@ -109,5 +150,6 @@ export default function Sidebar() {
         </nav>
       </div>
     </aside>
+    </>
   );
 }

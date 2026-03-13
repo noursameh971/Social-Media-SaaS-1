@@ -168,8 +168,8 @@ export default function SettingsPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[240px_1fr]">
-        <nav className="space-y-0.5">
+      <div className="grid grid-cols-1 gap-6 md:gap-8 lg:grid-cols-[240px_1fr]">
+        <nav className="flex flex-row gap-1 overflow-x-auto pb-2 lg:flex-col lg:space-y-0.5 lg:overflow-visible lg:pb-0">
           {TABS.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -178,7 +178,7 @@ export default function SettingsPage() {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium transition-colors ${
+                className={`flex shrink-0 items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium transition-colors lg:w-full ${
                   isActive
                     ? 'bg-indigo-50 text-indigo-700'
                     : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'

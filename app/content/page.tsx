@@ -171,12 +171,12 @@ export default function ContentPage() {
 
   return (
     <div className="min-h-screen w-full">
-      <div className="mb-8 flex w-full shrink-0 flex-col gap-4 rounded-xl border border-slate-200 bg-white px-6 py-5 shadow-sm lg:flex-row lg:items-center lg:justify-between lg:px-8">
+      <div className="mb-6 flex w-full shrink-0 flex-col gap-4 rounded-xl border border-slate-200 bg-white px-4 py-4 shadow-sm sm:px-6 sm:py-5 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">All Content</h1>
           <p className="mt-1 text-sm text-slate-500">Manage your social media posts</p>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
           <div className="relative w-full md:w-64">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input

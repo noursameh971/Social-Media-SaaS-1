@@ -171,7 +171,7 @@ export default function DashboardPage() {
         </header>
 
         {/* KPI Metrics - 4 Cards */}
-        <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <section className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
           {isLoading ? (
             [...Array(4)].map((_, i) => (
               <div key={i} className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
@@ -229,11 +229,11 @@ export default function DashboardPage() {
         </section>
 
         {/* Main Dashboard Split */}
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
           {/* Left Section (Span 2) - Pipeline & Content */}
           <section className="lg:col-span-2">
             <h2 className="mb-4 text-lg font-semibold text-slate-900">Recent / Upcoming Content</h2>
-            <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+            <div className="overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
               {isLoading ? (
                 <div className="flex items-center justify-center gap-3 py-16">
                   <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />

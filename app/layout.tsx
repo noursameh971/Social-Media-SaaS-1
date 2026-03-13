@@ -52,11 +52,7 @@ export default function RootLayout({
         />
         <Sidebar />
         <main
-          className="min-h-screen bg-slate-50 p-6 dark:bg-slate-900 lg:p-8"
-          style={{
-            marginLeft: '240px',
-            width: 'calc(100vw - 240px)',
-          }}
+          className="min-h-screen w-full bg-slate-50 px-4 pb-4 pt-16 dark:bg-slate-900 sm:px-6 sm:pb-6 lg:ml-[240px] lg:w-[calc(100vw-240px)] lg:p-8 lg:pt-8"
         >
           {children}
         </main>
