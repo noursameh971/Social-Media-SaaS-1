@@ -112,7 +112,7 @@ export default function Sidebar() {
         <div className="flex h-16 items-center justify-between gap-3 border-b border-slate-800 px-6">
           <div className="flex min-w-0 flex-1 items-center gap-3">
             {globalLogo ? (
-              <img src={globalLogo} alt={globalAgencyName} className="h-8 w-auto max-w-[120px] shrink-0 object-contain" />
+              <img src={globalLogo} alt={globalAgencyName} referrerPolicy="no-referrer" className="h-8 w-auto max-w-[120px] shrink-0 object-contain" />
             ) : null}
             <span className="truncate text-xl font-semibold text-white">{globalAgencyName}</span>
           </div>

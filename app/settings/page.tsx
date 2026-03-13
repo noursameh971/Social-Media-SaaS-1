@@ -115,8 +115,10 @@ export default function SettingsPage() {
       const path = `agency-${Date.now()}-${file.name}`;
       const { error: uploadError } = await supabase.storage.from('logos').upload(path, file, { upsert: true });
       if (uploadError) throw uploadError;
-      const { data: urlData } = supabase.storage.from('logos').getPublicUrl(path);
-      setLogoUrl(urlData.publicUrl);
+      const publicUrl = supabase.storage.from('logos').getPublicUrl(path).data.publicUrl;
+      setLogoUrl(publicUrl);
+      localStorage.setItem('agencyLogo', publicUrl);
+      window.dispatchEvent(new Event('agency-settings-updated'));
       toast.success('Logo uploaded! Save Agency Branding to apply.');
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to upload logo');
@@ -288,6 +290,7 @@ export default function SettingsPage() {
                         <img
                           src={logoUrl}
                           alt="Agency logo"
+                          referrerPolicy="no-referrer"
                           className="h-full w-full object-contain"
                         />
                       ) : logoUploading ? (
