@@ -19,16 +19,27 @@ export const metadata: Metadata = {
   description: "Social media management system dashboard",
 };
 
+const themeScript = `
+(function(){
+  try {
+    var theme = localStorage.getItem('theme');
+    if (theme === 'dark') document.documentElement.classList.add('dark');
+    else if (theme === 'light') document.documentElement.classList.remove('dark');
+  } catch(e){}
+})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-50 text-slate-900`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50`}
       >
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Toaster
           position="top-center"
           toastOptions={{
@@ -41,7 +52,7 @@ export default function RootLayout({
         />
         <Sidebar />
         <main
-          className="min-h-screen bg-slate-50 p-6 lg:p-8"
+          className="min-h-screen bg-slate-50 p-6 dark:bg-slate-900 lg:p-8"
           style={{
             marginLeft: '240px',
             width: 'calc(100vw - 240px)',

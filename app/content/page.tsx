@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
 import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabase';
-import { FileText, Search, Loader2 } from 'lucide-react';
+import { FileText, Search, Loader2, Trash2, AlertTriangle } from 'lucide-react';
 
 const KANBAN_COLUMNS = [
   { id: 'idea', label: 'Idea', dotColor: 'bg-gray-400' },
@@ -45,6 +45,7 @@ export default function ContentPage() {
   const [editContent, setEditContent] = useState('');
   const [editSaving, setEditSaving] = useState(false);
   const [editToast, setEditToast] = useState(false);
+  const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -119,6 +120,20 @@ export default function ContentPage() {
     setSelectedPost(null);
     setIsEditModalOpen(false);
   }
+
+  const handleDeletePost = async () => {
+    if (!postToDelete) return;
+    try {
+      const { error } = await supabase.from('content_posts').delete().eq('id', postToDelete);
+      if (error) throw error;
+      setPosts(posts.filter((p) => p.id !== postToDelete));
+      toast.success('Post deleted successfully 🗑️');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Failed to delete post');
+    } finally {
+      setPostToDelete(null);
+    }
+  };
 
   async function handleSaveEdit() {
     if (!selectedPost) return;
@@ -247,10 +262,22 @@ export default function ContentPage() {
                                     : 'cursor-grab hover:shadow-md'
                                 }`}
                               >
-                                <p className="text-xs font-medium text-indigo-600">
-                                  {Array.isArray(post.clients) ? post.clients[0]?.name : post.clients?.name ?? 'Unknown Client'}
-                                </p>
-                                <p className="mt-2 font-semibold text-slate-900">{post.title}</p>
+                                <div className="mb-2 flex items-start justify-between">
+                                  <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">
+                                    {Array.isArray(post.clients) ? post.clients[0]?.name : post.clients?.name ?? 'Unknown Client'}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setPostToDelete(post.id);
+                                    }}
+                                    className="rounded-md p-1.5 text-gray-300 transition-colors hover:bg-red-50 hover:text-red-500"
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
+                                </div>
+                                <p className="font-semibold text-slate-900">{post.title}</p>
                                 <div className="mt-3 flex flex-wrap gap-1.5">
                                   <span
                                     className={`rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -359,6 +386,40 @@ export default function ContentPage() {
                 className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {editSaving ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {postToDelete && (
+        <div className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-gray-900/40 duration-200 backdrop-blur-sm fade-in">
+          <div className="mx-4 w-full max-w-sm rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl duration-200 animate-in zoom-in-95 md:p-8">
+            <div className="mb-2 flex items-center gap-4">
+              <div className="rounded-2xl bg-red-50 p-3 text-red-600">
+                <AlertTriangle size={24} />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Delete Post</h3>
+              </div>
+            </div>
+            <p className="mb-6 mt-2 text-sm text-gray-500">
+              Are you completely sure? This action cannot be undone and will permanently delete this content.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setPostToDelete(null)}
+                className="rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeletePost}
+                className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-red-200 transition-colors hover:bg-red-700"
+              >
+                Yes, delete
               </button>
             </div>
           </div>

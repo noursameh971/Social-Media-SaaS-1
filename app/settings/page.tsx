@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
-import { User, Briefcase, Bell, Save, Bot, Key, Sparkles, Building2, UploadCloud, Globe, Users, Mail, Shield, Trash2, UserPlus } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import { User, Briefcase, Bell, Save, Bot, Key, Sparkles, Building2, UploadCloud, Globe, Users, Mail, Shield, Trash2, UserPlus, Moon, Sun } from 'lucide-react';
 
 const TABS = [
   { id: 'profile', label: 'Profile', icon: User },
@@ -22,17 +23,18 @@ export default function SettingsPage() {
     email: '',
   });
 
-  const [agencyForm, setAgencyForm] = useState({
-    name: 'Social Media OS',
-    website: 'https://agency.com',
-    logoUrl: '',
-  });
+  const [agencyName, setAgencyName] = useState('Social Media OS');
+  const [website, setWebsite] = useState('https://agency.com');
+  const [logoUrl, setLogoUrl] = useState('');
 
   const [notifications, setNotifications] = useState({
     emailAlertsTasks: false,
     weeklyAnalyticsReport: false,
     clientUpdates: false,
   });
+  const [darkMode, setDarkMode] = useState(false);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   const [teamMembers, setTeamMembers] = useState([
     { id: 1, name: 'Agency Admin (You)', email: 'admin@agency.com', role: 'Admin' },
@@ -49,6 +51,34 @@ export default function SettingsPage() {
   });
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedName = localStorage.getItem('agencyName');
+      const savedWebsite = localStorage.getItem('agencyWebsite');
+      const savedLogo = localStorage.getItem('agencyLogo');
+      if (savedName) setAgencyName(savedName);
+      if (savedWebsite) setWebsite(savedWebsite);
+      if (savedLogo) setLogoUrl(savedLogo);
+
+      const theme = localStorage.getItem('theme');
+      setDarkMode(theme === 'dark');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('notificationSettings');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setNotifications((n) => ({ ...n, ...parsed }));
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     if (!saveToast) return;
     const t = setTimeout(() => setSaveToast(false), 3000);
     return () => clearTimeout(t);
@@ -58,13 +88,55 @@ export default function SettingsPage() {
     setSaveToast(true);
   }
 
+  const handleSaveNotifications = () => {
+    localStorage.setItem('notificationSettings', JSON.stringify(notifications));
+    window.dispatchEvent(new Event('agency-settings-updated'));
+    toast.success('Notification preferences saved! 🔔');
+  };
+
+  const handleDarkModeToggle = () => {
+    const next = !darkMode;
+    setDarkMode(next);
+    localStorage.setItem('theme', next ? 'dark' : 'light');
+    document.documentElement.classList.toggle('dark', next);
+    window.dispatchEvent(new Event('theme-updated'));
+    toast.success(next ? 'Dark mode enabled 🌙' : 'Light mode enabled ☀️');
+  };
+
+  const handleLogoFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !file.type.startsWith('image/')) {
+      toast.error('Please select an image file (PNG, JPG, etc.)');
+      e.target.value = '';
+      return;
+    }
+    setLogoUploading(true);
+    try {
+      const path = `agency-${Date.now()}-${file.name}`;
+      const { error: uploadError } = await supabase.storage.from('logos').upload(path, file, { upsert: true });
+      if (uploadError) throw uploadError;
+      const { data: urlData } = supabase.storage.from('logos').getPublicUrl(path);
+      setLogoUrl(urlData.publicUrl);
+      toast.success('Logo uploaded! Save Agency Branding to apply.');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to upload logo');
+    } finally {
+      setLogoUploading(false);
+      e.target.value = '';
+    }
+  };
+
   function handleSaveAIConfig() {
     toast.success('AI Engine configuration securely saved! 🚀');
   }
 
-  function handleSaveAgency() {
-    toast.success('Agency branding updated successfully! 🏢');
-  }
+  const handleSaveAgency = () => {
+    localStorage.setItem('agencyName', agencyName);
+    localStorage.setItem('agencyWebsite', website);
+    localStorage.setItem('agencyLogo', logoUrl);
+    window.dispatchEvent(new Event('agency-settings-updated'));
+    toast.success('Agency branding saved successfully! 🎨');
+  };
 
   function handleInvite() {
     if (!inviteEmail.trim()) return;
@@ -84,8 +156,8 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold text-slate-900">Settings</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-50">Settings</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Manage your account and preferences.
         </p>
       </header>
@@ -185,8 +257,8 @@ export default function SettingsPage() {
                   <input
                     id="agency-name"
                     type="text"
-                    value={agencyForm.name}
-                    onChange={(e) => setAgencyForm((a) => ({ ...a, name: e.target.value }))}
+                    value={agencyName}
+                    onChange={(e) => setAgencyName(e.target.value)}
                     placeholder="Enter agency name"
                     className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
@@ -199,8 +271,8 @@ export default function SettingsPage() {
                   <input
                     id="agency-website"
                     type="url"
-                    value={agencyForm.website}
-                    onChange={(e) => setAgencyForm((a) => ({ ...a, website: e.target.value }))}
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
                     placeholder="https://"
                     className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
@@ -212,26 +284,36 @@ export default function SettingsPage() {
                   </label>
                   <div className="flex items-center gap-4">
                     <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-slate-200 bg-slate-50">
-                      {agencyForm.logoUrl ? (
+                      {logoUrl ? (
                         <img
-                          src={agencyForm.logoUrl}
+                          src={logoUrl}
                           alt="Agency logo"
                           className="h-full w-full object-contain"
                         />
+                      ) : logoUploading ? (
+                        <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
                       ) : (
                         <UploadCloud className="h-10 w-10 text-slate-400" />
                       )}
                     </div>
                     <div className="flex-1">
                       <input
+                        ref={logoInputRef}
                         id="agency-logo"
-                        type="url"
-                        value={agencyForm.logoUrl}
-                        onChange={(e) => setAgencyForm((a) => ({ ...a, logoUrl: e.target.value }))}
-                        placeholder="Paste logo URL or upload"
-                        className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoFileSelect}
+                        className="hidden"
                       />
-                      <p className="mt-1 text-xs text-slate-500">Enter a direct URL to your logo image</p>
+                      <button
+                        type="button"
+                        onClick={() => logoInputRef.current?.click()}
+                        disabled={logoUploading}
+                        className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-60"
+                      >
+                        {logoUploading ? 'Uploading...' : 'Choose logo file'}
+                      </button>
+                      <p className="mt-1 text-xs text-slate-500">PNG, JPG, SVG up to 5MB</p>
                     </div>
                   </div>
                 </div>
@@ -418,12 +500,42 @@ export default function SettingsPage() {
           )}
 
           {activeTab === 'notifications' && (
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-slate-900">Notifications</h2>
-              <p className="mt-1 text-sm text-slate-500">
-                Choose how you want to be notified.
+            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Notifications & General</h2>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                Choose how you want to be notified and customize appearance.
               </p>
+
+              <div className="mt-6 border-b border-slate-200 pb-6">
+                <h3 className="mb-3 text-sm font-semibold text-slate-800">Appearance</h3>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {darkMode ? <Moon className="h-5 w-5 text-indigo-600" /> : <Sun className="h-5 w-5 text-amber-500" />}
+                    <div>
+                      <p className="text-sm font-medium text-slate-700">Dark Mode (Night Mode)</p>
+                      <p className="text-xs text-slate-500">Switch between light and dark theme</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={darkMode}
+                    onClick={handleDarkModeToggle}
+                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+                      darkMode ? 'bg-indigo-600' : 'bg-slate-200'
+                    }`}
+                  >
+                    <span
+                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition ${
+                        darkMode ? 'translate-x-5' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
+
               <div className="mt-6 space-y-6">
+                <h3 className="text-sm font-semibold text-slate-800">Notifications</h3>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-slate-700">Email Alerts for Tasks</p>
@@ -488,11 +600,21 @@ export default function SettingsPage() {
                   </button>
                 </div>
               </div>
+              <div className="mt-6 flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleSaveNotifications}
+                  className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+                >
+                  <Save className="h-4 w-4" />
+                  Save Changes
+                </button>
+              </div>
             </div>
           )}
 
           <div className="flex justify-end">
-            {activeTab !== 'ai' && activeTab !== 'agency' && activeTab !== 'team' && (
+            {activeTab !== 'ai' && activeTab !== 'agency' && activeTab !== 'team' && activeTab !== 'notifications' && (
               <button
                 type="button"
                 onClick={handleSave}
