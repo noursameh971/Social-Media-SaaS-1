@@ -71,12 +71,17 @@ export default function Sidebar() {
       const loadSettings = () => {
         setGlobalAgencyName(localStorage.getItem("agencyName") || "Social Media OS");
         setGlobalLogo(localStorage.getItem("agencyLogo") || "");
+        setLogoError(false);
       };
       loadSettings();
       window.addEventListener("agency-settings-updated", loadSettings);
       return () => window.removeEventListener("agency-settings-updated", loadSettings);
     }
   }, []);
+
+  useEffect(() => {
+    setLogoError(false);
+  }, [globalLogo]);
 
   const closeSidebar = () => setIsOpen(false);
 
@@ -111,9 +116,21 @@ export default function Sidebar() {
       <div className="flex h-full flex-col">
         <div className="flex h-16 items-center justify-between gap-3 border-b border-slate-800 px-6">
           <div className="flex min-w-0 flex-1 items-center gap-3">
-            {globalLogo ? (
-              <img src={globalLogo} alt={globalAgencyName} referrerPolicy="no-referrer" className="h-8 w-auto max-w-[120px] shrink-0 object-contain" />
-            ) : null}
+            {globalLogo && !logoError ? (
+              <img
+                key={globalLogo}
+                src={globalLogo}
+                alt={globalAgencyName}
+                referrerPolicy="no-referrer"
+                crossOrigin="anonymous"
+                onError={() => setLogoError(true)}
+                className="h-8 w-auto max-w-[120px] shrink-0 object-contain"
+              />
+            ) : (
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-700/80 text-slate-300">
+                <span className="text-sm font-bold">{globalAgencyName.charAt(0).toUpperCase() || "B"}</span>
+              </div>
+            )}
             <span className="truncate text-xl font-semibold text-white">{globalAgencyName}</span>
           </div>
           <button

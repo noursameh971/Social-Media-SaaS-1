@@ -61,15 +61,21 @@ export default function SettingsPage() {
 
       const theme = localStorage.getItem('theme');
       setDarkMode(theme === 'dark');
-    }
-  }, []);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('notificationSettings');
-      if (saved) {
+      const savedProfile = localStorage.getItem('profileSettings');
+      if (savedProfile) {
         try {
-          const parsed = JSON.parse(saved);
+          const parsed = JSON.parse(savedProfile);
+          setProfile((p) => ({ ...p, ...parsed }));
+        } catch {
+          /* ignore */
+        }
+      }
+
+      const savedNotifications = localStorage.getItem('notificationSettings');
+      if (savedNotifications) {
+        try {
+          const parsed = JSON.parse(savedNotifications);
           setNotifications((n) => ({ ...n, ...parsed }));
         } catch {
           /* ignore */
@@ -84,9 +90,11 @@ export default function SettingsPage() {
     return () => clearTimeout(t);
   }, [saveToast]);
 
-  function handleSave() {
+  const handleSaveProfile = () => {
+    localStorage.setItem('profileSettings', JSON.stringify(profile));
     setSaveToast(true);
-  }
+    toast.success('Profile saved successfully! ✓');
+  };
 
   const handleSaveNotifications = () => {
     localStorage.setItem('notificationSettings', JSON.stringify(notifications));
@@ -113,9 +121,10 @@ export default function SettingsPage() {
     setLogoUploading(true);
     try {
       const path = `agency-${Date.now()}-${file.name}`;
-      const { error: uploadError } = await supabase.storage.from('logos').upload(path, file, { upsert: true });
+      const { data, error: uploadError } = await supabase.storage.from('logos').upload(path, file, { upsert: true });
       if (uploadError) throw uploadError;
-      const publicUrl = supabase.storage.from('logos').getPublicUrl(path).data.publicUrl;
+      const filePath = data?.path ?? path;
+      const publicUrl = supabase.storage.from('logos').getPublicUrl(filePath).data.publicUrl;
       setLogoUrl(publicUrl);
       localStorage.setItem('agencyLogo', publicUrl);
       window.dispatchEvent(new Event('agency-settings-updated'));
@@ -617,10 +626,10 @@ export default function SettingsPage() {
           )}
 
           <div className="flex justify-end">
-            {activeTab !== 'ai' && activeTab !== 'agency' && activeTab !== 'team' && activeTab !== 'notifications' && (
+            {activeTab === 'profile' && (
               <button
                 type="button"
-                onClick={handleSave}
+                onClick={handleSaveProfile}
                 className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
                 <Save className="h-4 w-4" />
