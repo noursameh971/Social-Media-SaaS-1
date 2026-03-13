@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabase';
-import { User, Briefcase, Bell, Save, Bot, Key, Sparkles, Building2, UploadCloud, Globe, Users, Mail, Shield, Trash2, UserPlus, Moon, Sun } from 'lucide-react';
+import { User, Briefcase, Bell, Save, Bot, Key, Sparkles, Building2, UploadCloud, Globe, Users, Mail, Shield, Trash2, UserPlus, Moon, Sun, Loader2 } from 'lucide-react';
 
 const TABS = [
   { id: 'profile', label: 'Profile', icon: User },
@@ -23,8 +23,8 @@ export default function SettingsPage() {
     email: '',
   });
 
-  const [agencyName, setAgencyName] = useState('Social Media OS');
-  const [website, setWebsite] = useState('https://agency.com');
+  const [agencyName, setAgencyName] = useState('');
+  const [website, setWebsite] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
 
   const [notifications, setNotifications] = useState({
@@ -34,6 +34,7 @@ export default function SettingsPage() {
   });
   const [darkMode, setDarkMode] = useState(false);
   const [logoUploading, setLogoUploading] = useState(false);
+  const [logoError, setLogoError] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
   const [teamMembers, setTeamMembers] = useState([
@@ -42,6 +43,7 @@ export default function SettingsPage() {
   ]);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('Editor');
+  const [isInviting, setIsInviting] = useState(false);
 
   const [aiForm, setAiForm] = useState({
     provider: 'groq',
@@ -52,12 +54,9 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const savedName = localStorage.getItem('agencyName');
-      const savedWebsite = localStorage.getItem('agencyWebsite');
-      const savedLogo = localStorage.getItem('agencyLogo');
-      if (savedName) setAgencyName(savedName);
-      if (savedWebsite) setWebsite(savedWebsite);
-      if (savedLogo) setLogoUrl(savedLogo);
+      setAgencyName(localStorage.getItem('agencyName') || 'Social Media OS');
+      setWebsite(localStorage.getItem('agencyWebsite') || '');
+      setLogoUrl(localStorage.getItem('agencyLogo') || '');
 
       const theme = localStorage.getItem('theme');
       setDarkMode(theme === 'dark');
@@ -111,26 +110,27 @@ export default function SettingsPage() {
     toast.success(next ? 'Dark mode enabled 🌙' : 'Light mode enabled ☀️');
   };
 
-  const handleLogoFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !file.type.startsWith('image/')) {
-      toast.error('Please select an image file (PNG, JPG, etc.)');
-      e.target.value = '';
-      return;
-    }
+    if (!file) return;
+
+    const toastId = toast.loading('Uploading logo...');
     setLogoUploading(true);
     try {
-      const path = `agency-${Date.now()}-${file.name}`;
-      const { data, error: uploadError } = await supabase.storage.from('logos').upload(path, file, { upsert: true });
-      if (uploadError) throw uploadError;
-      const filePath = data?.path ?? path;
-      const publicUrl = supabase.storage.from('logos').getPublicUrl(filePath).data.publicUrl;
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+
+      const { data, error } = await supabase.storage.from('logos').upload(fileName, file);
+      if (error) throw error;
+
+      const filePath = data?.path ?? fileName;
+      const { data: urlData } = supabase.storage.from('logos').getPublicUrl(filePath);
+      const publicUrl = urlData.publicUrl;
       setLogoUrl(publicUrl);
-      localStorage.setItem('agencyLogo', publicUrl);
-      window.dispatchEvent(new Event('agency-settings-updated'));
-      toast.success('Logo uploaded! Save Agency Branding to apply.');
+      setLogoError(false);
+      toast.success('Logo uploaded! Click Save to apply.', { id: toastId });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to upload logo');
+      toast.error('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'), { id: toastId });
     } finally {
       setLogoUploading(false);
       e.target.value = '';
@@ -146,17 +146,36 @@ export default function SettingsPage() {
     localStorage.setItem('agencyWebsite', website);
     localStorage.setItem('agencyLogo', logoUrl);
     window.dispatchEvent(new Event('agency-settings-updated'));
-    toast.success('Agency branding saved successfully! 🎨');
+    toast.success('Agency branding saved successfully!');
   };
 
-  function handleInvite() {
-    if (!inviteEmail.trim()) return;
-    setTeamMembers((prev) => [
-      ...prev,
-      { id: Date.now(), name: 'Pending Invite...', email: inviteEmail.trim(), role: inviteRole },
-    ]);
-    setInviteEmail('');
-    toast.success('Invitation sent successfully! 📧');
+  async function handleInvite() {
+    const email = inviteEmail.trim();
+    if (!email) {
+      toast.error('Please enter an email address.');
+      return;
+    }
+    setIsInviting(true);
+    try {
+      const res = await fetch('/api/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, role: inviteRole }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? 'Failed to send invitation');
+      setInviteEmail('');
+      setTeamMembers((prev) => [
+        ...prev,
+        { id: Date.now(), name: 'Pending Invite...', email, role: inviteRole },
+      ]);
+      toast.success('Invitation sent to email! 📧');
+    } catch (err) {
+      console.error('Invite error:', err);
+      toast.error(err instanceof Error ? err.message : 'Failed to send invitation');
+    } finally {
+      setIsInviting(false);
+    }
   }
 
   function handleRemove(id: number) {
@@ -204,7 +223,7 @@ export default function SettingsPage() {
 
         <div className="space-y-6">
           {activeTab === 'profile' && (
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm md:p-8">
               <h2 className="text-lg font-semibold text-slate-900">Profile</h2>
               <p className="mt-1 text-sm text-slate-500">
                 Your personal information.
@@ -220,7 +239,7 @@ export default function SettingsPage() {
                     value={profile.firstName}
                     onChange={(e) => setProfile((p) => ({ ...p, firstName: e.target.value }))}
                     placeholder="Enter first name"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 transition-all placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <div>
@@ -233,7 +252,7 @@ export default function SettingsPage() {
                     value={profile.lastName}
                     onChange={(e) => setProfile((p) => ({ ...p, lastName: e.target.value }))}
                     placeholder="Enter last name"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 transition-all placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <div>
@@ -246,7 +265,7 @@ export default function SettingsPage() {
                     value={profile.email}
                     onChange={(e) => setProfile((p) => ({ ...p, email: e.target.value }))}
                     placeholder="e.g. you@agency.com"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 transition-all placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
               </div>
@@ -254,7 +273,7 @@ export default function SettingsPage() {
           )}
 
           {activeTab === 'agency' && (
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm md:p-8">
               <h2 className="text-lg font-semibold text-slate-900">Agency Branding</h2>
               <p className="mt-1 text-sm text-slate-500">
                 White-label your agency with custom logo and branding.
@@ -271,7 +290,7 @@ export default function SettingsPage() {
                     value={agencyName}
                     onChange={(e) => setAgencyName(e.target.value)}
                     placeholder="Enter agency name"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 transition-all placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <div>
@@ -285,7 +304,7 @@ export default function SettingsPage() {
                     value={website}
                     onChange={(e) => setWebsite(e.target.value)}
                     placeholder="https://"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 transition-all placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <div>
@@ -294,18 +313,19 @@ export default function SettingsPage() {
                     Logo
                   </label>
                   <div className="flex items-center gap-4">
-                    <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-slate-200 bg-slate-50">
-                      {logoUrl ? (
+                    <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-gray-300 bg-gray-50">
+                      {logoUrl && !logoError && !logoUploading ? (
                         <img
                           src={logoUrl}
                           alt="Agency logo"
                           referrerPolicy="no-referrer"
-                          className="h-full w-full object-contain"
+                          onError={() => setLogoError(true)}
+                          className="h-full w-full object-contain rounded-lg border border-gray-100"
                         />
                       ) : logoUploading ? (
                         <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
                       ) : (
-                        <UploadCloud className="h-10 w-10 text-slate-400" />
+                        <UploadCloud size={24} className="text-gray-400" />
                       )}
                     </div>
                     <div className="flex-1">
@@ -314,7 +334,7 @@ export default function SettingsPage() {
                         id="agency-logo"
                         type="file"
                         accept="image/*"
-                        onChange={handleLogoFileSelect}
+                        onChange={handleLogoUpload}
                         className="hidden"
                       />
                       <button
@@ -358,7 +378,7 @@ export default function SettingsPage() {
                   <UserPlus size={16} className="text-emerald-500" />
                   Invite New Member
                 </h3>
-                <div className="flex flex-col gap-4 md:flex-row">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center">
                   <div className="relative flex-1">
                     <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" size={16} />
                     <input
@@ -366,13 +386,13 @@ export default function SettingsPage() {
                       placeholder="colleague@agency.com"
                       value={inviteEmail}
                       onChange={(e) => setInviteEmail(e.target.value)}
-                      className="w-full rounded-lg border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm shadow-sm outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="h-10 w-full rounded-lg border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm shadow-sm outline-none transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                     />
                   </div>
                   <select
                     value={inviteRole}
                     onChange={(e) => setInviteRole(e.target.value)}
-                    className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm shadow-sm outline-none focus:ring-2 focus:ring-emerald-500 md:w-40"
+                    className="h-10 w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm shadow-sm outline-none transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 md:w-40"
                   >
                     <option value="Admin">Admin</option>
                     <option value="Editor">Editor</option>
@@ -381,9 +401,17 @@ export default function SettingsPage() {
                   <button
                     type="button"
                     onClick={handleInvite}
-                    className="whitespace-nowrap rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+                    disabled={isInviting}
+                    className="flex h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    Send Invite
+                    {isInviting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      'Send Invite'
+                    )}
                   </button>
                 </div>
               </div>
@@ -397,10 +425,10 @@ export default function SettingsPage() {
                   {teamMembers.map((member) => (
                     <div
                       key={member.id}
-                      className="flex items-center justify-between bg-white p-4 transition-colors hover:bg-gray-50"
+                      className="flex items-center justify-between bg-white p-4 transition-colors duration-150 hover:bg-gray-50/50"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-100 to-purple-100 text-sm font-bold text-indigo-700">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full border border-indigo-100 bg-gradient-to-br from-indigo-50 to-purple-50 text-sm font-bold text-indigo-700">
                           {member.name.charAt(0)}
                         </div>
                         <div>
@@ -412,10 +440,10 @@ export default function SettingsPage() {
                         <span
                           className={`rounded-full px-2.5 py-1 text-xs font-medium ${
                             member.role === 'Admin'
-                              ? 'bg-purple-100 text-purple-700'
+                              ? 'border border-purple-100 bg-purple-50 text-purple-700'
                               : member.role === 'Editor'
-                                ? 'bg-blue-100 text-blue-700'
-                                : 'bg-gray-100 text-gray-700'
+                                ? 'border border-blue-100 bg-blue-50 text-blue-700'
+                                : 'border border-gray-200 bg-gray-50 text-gray-700'
                           }`}
                         >
                           {member.role}
@@ -437,7 +465,7 @@ export default function SettingsPage() {
           )}
 
           {activeTab === 'ai' && (
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm md:p-8">
               <h2 className="text-lg font-semibold text-slate-900">AI Engine</h2>
               <p className="mt-1 text-sm text-slate-500">
                 Configure your AI provider and API keys for content generation.
@@ -452,7 +480,7 @@ export default function SettingsPage() {
                     id="ai-provider"
                     value={aiForm.provider}
                     onChange={(e) => setAiForm((a) => ({ ...a, provider: e.target.value }))}
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   >
                     <option value="groq">Groq</option>
                     <option value="openai">OpenAI</option>
@@ -469,7 +497,7 @@ export default function SettingsPage() {
                     value={aiForm.apiKey}
                     onChange={(e) => setAiForm((a) => ({ ...a, apiKey: e.target.value }))}
                     placeholder="Enter your API key (stored securely)"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 transition-all placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <div>
@@ -482,7 +510,7 @@ export default function SettingsPage() {
                     value={aiForm.model}
                     onChange={(e) => setAiForm((a) => ({ ...a, model: e.target.value }))}
                     placeholder="e.g. llama-3.1-8b-instant"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 transition-all placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <div>
@@ -496,7 +524,7 @@ export default function SettingsPage() {
                     onChange={(e) => setAiForm((a) => ({ ...a, tone: e.target.value }))}
                     rows={3}
                     placeholder="Describe the default tone for AI-generated content"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 transition-all placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <button
@@ -512,7 +540,7 @@ export default function SettingsPage() {
           )}
 
           {activeTab === 'notifications' && (
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800 md:p-8">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Notifications & General</h2>
               <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 Choose how you want to be notified and customize appearance.

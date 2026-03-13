@@ -34,7 +34,6 @@ export default function AssetsPage() {
   const [error, setError] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [uploadToast, setUploadToast] = useState(false);
   const [previewAsset, setPreviewAsset] = useState<Asset | null>(null);
   const [assetToDelete, setAssetToDelete] = useState<Asset | null>(null);
 
@@ -87,7 +86,7 @@ export default function AssetsPage() {
   async function handleUpload(e: React.FormEvent) {
     e.preventDefault();
     if (!form.name.trim() || !form.client_id || !form.file) {
-      alert('Please enter an asset name, select a client, and choose a file.');
+      toast.error('Please enter an asset name, select a client, and choose a file.');
       return;
     }
     setUploading(true);
@@ -101,7 +100,7 @@ export default function AssetsPage() {
 
       if (uploadError) {
         console.error('Storage upload error:', uploadError);
-        alert('Upload failed: ' + uploadError.message);
+        toast.error('Upload failed: ' + uploadError.message);
         return;
       }
 
@@ -117,17 +116,17 @@ export default function AssetsPage() {
 
       if (insertError) {
         console.error('Supabase insert error:', insertError);
-        alert('Save failed: ' + insertError.message);
+        toast.error('Save failed: ' + insertError.message);
         return;
       }
 
       setModalOpen(false);
       setForm({ name: '', client_id: '', file: null });
-      setUploadToast(true);
+      toast.success('Asset uploaded successfully! ✨');
       await fetchAssets();
     } catch (err) {
       console.error('Upload error:', err);
-      alert(err instanceof Error ? err.message : 'Upload failed');
+      toast.error(err instanceof Error ? err.message : 'Upload failed');
     } finally {
       setUploading(false);
     }
@@ -202,12 +201,6 @@ export default function AssetsPage() {
           </button>
         </header>
 
-        {uploadToast && (
-          <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-medium text-emerald-800 shadow-sm">
-            Asset uploaded successfully!
-          </div>
-        )}
-
         {loading ? (
           <div className="flex items-center justify-center gap-3 py-24">
             <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
@@ -261,10 +254,10 @@ export default function AssetsPage() {
               {filteredAssets.map((asset) => (
               <div
                 key={asset.id}
-                className="flex flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-md"
+                className="group flex flex-col overflow-hidden rounded-xl border border-gray-100 bg-white transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
               >
                 <div
-                  className={`group relative h-48 w-full overflow-hidden bg-gray-100 ${isImage(asset.file_type) ? 'cursor-pointer' : 'flex items-center justify-center'}`}
+                  className={`relative h-40 w-full overflow-hidden bg-gray-100 ${isImage(asset.file_type) ? 'cursor-pointer' : 'flex items-center justify-center'}`}
                   onClick={() => isImage(asset.file_type) && setPreviewAsset(asset)}
                 >
                   {isImage(asset.file_type) ? (
@@ -272,47 +265,47 @@ export default function AssetsPage() {
                       <img
                         src={asset.file_url}
                         alt={asset.file_name}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="h-full w-full border-b border-gray-50 object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
                     </>
                   ) : (
-                    <File className="h-12 w-12 text-slate-400" />
+                    <div className="flex h-40 w-full items-center justify-center border-b border-gray-50">
+                      <File className="h-12 w-12 text-slate-400" />
+                    </div>
                   )}
-                  <div className="absolute right-2 top-2 z-10 flex items-center gap-2 opacity-0 transition-opacity group-hover:opacity-100">
-                    <button
-                      type="button"
-                      onClick={(e) => handleCopyLink(e, asset.file_url)}
-                      className="rounded-lg bg-white/90 p-1.5 text-gray-600 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:text-indigo-600"
-                      title="Copy Link"
-                    >
-                      <Link size={16} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setAssetToDelete(asset);
-                      }}
-                      className="rounded-lg bg-white/90 p-1.5 text-gray-600 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:text-red-600"
-                      title="Delete Asset"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setAssetToDelete(asset);
+                    }}
+                    className="absolute right-2 top-2 z-10 rounded-lg bg-white/90 p-1.5 text-red-400 shadow-sm backdrop-blur transition-all opacity-0 group-hover:opacity-100 hover:text-red-600"
+                    title="Delete Asset"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => handleCopyLink(e, asset.file_url)}
+                    className="absolute right-2 top-12 z-10 rounded-lg bg-white/90 p-1.5 text-gray-600 shadow-sm backdrop-blur transition-all opacity-0 group-hover:opacity-100 hover:text-indigo-600"
+                    title="Copy Link"
+                  >
+                    <Link size={16} />
+                  </button>
                 </div>
-                <div className="flex flex-1 flex-col gap-2 border-t border-gray-100 p-4">
-                  <span className="rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700">
+                <div className="flex flex-1 flex-col gap-2 p-4">
+                  <span className="w-fit rounded-md bg-indigo-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-indigo-700">
                     {getClientName(asset) || 'Unknown'}
                   </span>
-                  <p className="w-full truncate text-sm font-medium text-gray-900" title={asset.file_name}>
+                  <p className="truncate font-medium text-gray-900" title={asset.file_name}>
                     {asset.file_name}
                   </p>
                   <a
                     href={asset.file_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700"
+                    className="mt-2 inline-flex w-fit items-center gap-1.5 text-sm font-medium text-gray-500 transition-colors hover:text-indigo-600"
                   >
                     <Download className="h-4 w-4" />
                     Download
@@ -396,11 +389,11 @@ export default function AssetsPage() {
 
         {modalOpen && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-gray-900/40 p-4 backdrop-blur-sm fade-in duration-200"
             onClick={() => !uploading && setModalOpen(false)}
           >
             <div
-              className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-2xl"
+              className="mx-4 w-full max-w-md rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl animate-in zoom-in-95 md:p-8"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="mb-6 flex items-center justify-between">
@@ -442,14 +435,17 @@ export default function AssetsPage() {
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium text-slate-700">File</label>
-                  <input
-                    type="file"
-                    onChange={(e) => setForm((f) => ({ ...f, file: e.target.files?.[0] ?? null }))}
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm text-slate-900 file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-indigo-600 hover:file:bg-indigo-100"
-                  />
-                  {form.file && (
-                    <p className="mt-1 text-xs text-slate-500">{form.file.name}</p>
-                  )}
+                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/50 px-6 py-8 transition-colors hover:border-indigo-300 hover:bg-indigo-50/30 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20">
+                    <input
+                      type="file"
+                      onChange={(e) => setForm((f) => ({ ...f, file: e.target.files?.[0] ?? null }))}
+                      className="sr-only outline-none focus:ring-0"
+                    />
+                    <UploadCloud className="mb-2 h-10 w-10 text-gray-400" />
+                    <span className="text-sm font-medium text-gray-600">
+                      {form.file ? form.file.name : 'Choose file or drag here'}
+                    </span>
+                  </label>
                 </div>
                 <div className="flex justify-end gap-3 border-t border-slate-100 pt-5">
                   <button

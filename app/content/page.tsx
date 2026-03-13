@@ -7,18 +7,18 @@ import { supabase } from '@/lib/supabase';
 import { FileText, Search, Loader2, Trash2, AlertTriangle } from 'lucide-react';
 
 const KANBAN_COLUMNS = [
-  { id: 'idea', label: 'Idea', dotColor: 'bg-gray-400' },
-  { id: 'draft', label: 'Draft', dotColor: 'bg-amber-500' },
-  { id: 'review', label: 'Review', dotColor: 'bg-blue-500' },
-  { id: 'published', label: 'Published', dotColor: 'bg-emerald-500' },
+  { id: 'idea', label: 'Idea', dotColor: 'bg-gray-400', headerBg: 'bg-gray-50/50 border-b border-gray-100' },
+  { id: 'draft', label: 'Draft', dotColor: 'bg-amber-500', headerBg: 'bg-amber-50/30 border-b border-amber-100' },
+  { id: 'review', label: 'Review', dotColor: 'bg-blue-500', headerBg: 'bg-blue-50/30 border-b border-blue-100' },
+  { id: 'published', label: 'Published', dotColor: 'bg-emerald-500', headerBg: 'bg-emerald-50/30 border-b border-emerald-100' },
 ] as const;
 
 const PLATFORM_STYLES: Record<string, string> = {
-  Instagram: 'bg-gradient-to-r from-purple-500 to-pink-500 text-white',
-  TikTok: 'bg-slate-900 text-white',
-  Twitter: 'bg-sky-500 text-white',
-  Facebook: 'bg-blue-600 text-white',
-  LinkedIn: 'bg-blue-700 text-white',
+  Instagram: 'border border-pink-100 bg-pink-50 text-pink-700',
+  LinkedIn: 'border border-blue-100 bg-blue-50 text-blue-700',
+  TikTok: 'border border-slate-200 bg-slate-50 text-slate-700',
+  Twitter: 'border border-sky-200 bg-sky-50 text-sky-700',
+  Facebook: 'border border-blue-200 bg-blue-50 text-blue-700',
 };
 
 type Post = {
@@ -184,13 +184,13 @@ export default function ContentPage() {
               placeholder="Search posts..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-9 w-full rounded-lg border border-gray-200 bg-white py-1.5 pl-9 pr-3 text-sm text-slate-900 shadow-sm placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="h-10 w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-900 shadow-sm placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
             />
           </div>
           <select
             value={selectedClient}
             onChange={(e) => setSelectedClient(e.target.value)}
-            className="h-9 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm text-slate-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            className="h-10 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           >
             <option value="all">All Clients</option>
             {uniqueClients.map((c) => (
@@ -202,7 +202,7 @@ export default function ContentPage() {
           <select
             value={selectedPlatform}
             onChange={(e) => setSelectedPlatform(e.target.value)}
-            className="h-9 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm text-slate-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            className="h-10 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           >
             <option value="all">All Platforms</option>
             {uniquePlatforms.map((platform) => (
@@ -225,9 +225,9 @@ export default function ContentPage() {
               return (
                 <div
                   key={col.id}
-                  className="flex min-h-[400px] flex-col rounded-2xl border border-gray-100 bg-gray-50/50"
+                  className={`flex min-h-[400px] flex-col rounded-2xl overflow-hidden ${columnPosts.length > 0 ? 'bg-gray-50/30' : ''}`}
                 >
-                  <div className="flex items-center justify-between border-b border-gray-100 p-4">
+                  <div className={`flex items-center justify-between p-3 ${col.headerBg} rounded-t-xl`}>
                     <div className="flex items-center gap-2">
                       <span className={`h-2 w-2 rounded-full ${col.dotColor}`} />
                       <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-700">
@@ -244,8 +244,8 @@ export default function ContentPage() {
                       <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        className={`flex flex-1 flex-col gap-3 p-4 ${
-                          snapshot.isDraggingOver ? 'rounded-xl bg-gray-100/50' : ''
+                        className={`flex flex-1 flex-col gap-3 p-2 rounded-b-xl ${
+                          snapshot.isDraggingOver ? 'bg-gray-100/50' : columnPosts.length > 0 ? 'bg-gray-50/30' : ''
                         }`}
                       >
                         {columnPosts.map((post, index) => (
@@ -256,14 +256,14 @@ export default function ContentPage() {
                                 {...dragProvided.draggableProps}
                                 {...dragProvided.dragHandleProps}
                                 onClick={() => openEditModal(post)}
-                                className={`relative rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition-all ${
+                                className={`group relative cursor-pointer rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition-all duration-200 ${
                                   dragSnapshot.isDragging
                                     ? 'rotate-1 cursor-grabbing shadow-lg ring-2 ring-indigo-500/20'
-                                    : 'cursor-grab hover:shadow-md'
+                                    : 'cursor-grab hover:-translate-y-1 hover:shadow-md'
                                 }`}
                               >
                                 <div className="mb-2 flex items-start justify-between">
-                                  <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">
+                                  <span className="rounded-md bg-indigo-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-indigo-700">
                                     {Array.isArray(post.clients) ? post.clients[0]?.name : post.clients?.name ?? 'Unknown Client'}
                                   </span>
                                   <button
@@ -272,7 +272,7 @@ export default function ContentPage() {
                                       e.stopPropagation();
                                       setPostToDelete(post.id);
                                     }}
-                                    className="rounded-md p-1.5 text-gray-300 transition-colors hover:bg-red-50 hover:text-red-500"
+                                    className="rounded-md p-1.5 text-gray-400 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-50 hover:text-red-500"
                                   >
                                     <Trash2 size={14} />
                                   </button>
@@ -280,13 +280,13 @@ export default function ContentPage() {
                                 <p className="font-semibold text-slate-900">{post.title}</p>
                                 <div className="mt-3 flex flex-wrap gap-1.5">
                                   <span
-                                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                                      PLATFORM_STYLES[post.platform] ?? 'bg-slate-200 text-slate-700'
+                                    className={`rounded-full border px-2 py-0.5 text-xs font-medium ${
+                                      PLATFORM_STYLES[post.platform] ?? 'border-slate-200 bg-slate-50 text-slate-700'
                                     }`}
                                   >
                                     {post.platform}
                                   </span>
-                                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                                  <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs text-slate-600">
                                     {post.format}
                                   </span>
                                 </div>

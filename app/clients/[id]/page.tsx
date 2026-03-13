@@ -632,7 +632,7 @@ export default function ClientWorkspacePage() {
                 className="sr-only"
                 onChange={(e) => setSelectedFiles(e.target.files ? Array.from(e.target.files) : [])}
               />
-              <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 px-6 py-4 transition-colors hover:border-indigo-300 hover:bg-indigo-50/30 sm:flex-row sm:gap-4">
+              <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-indigo-200 bg-indigo-50/50 px-6 py-4 transition-colors hover:bg-indigo-50 sm:flex-row sm:gap-4">
                 <label
                   htmlFor="pdf-upload"
                   className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-800"
@@ -646,7 +646,7 @@ export default function ClientWorkspacePage() {
                   type="button"
                   onClick={handleExtractFromPdf}
                   disabled={extracting || selectedFiles.length === 0}
-                  className="inline-flex items-center gap-1.5 rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {extracting ? (
                     <>
@@ -662,7 +662,7 @@ export default function ClientWorkspacePage() {
                 type="button"
                 onClick={handleSaveProfile}
                 disabled={profileSaveState === 'saving'}
-                className={`flex-shrink-0 inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
+                className={`flex-shrink-0 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
                   profileSaveState === 'saved'
                     ? 'bg-emerald-600 hover:bg-emerald-700'
                     : 'bg-indigo-600 hover:bg-indigo-700'
@@ -888,8 +888,8 @@ export default function ClientWorkspacePage() {
 
             {/* Pipeline View */}
             {savedPosts.length === 0 ? (
-              <div className="rounded-xl border border-slate-200 bg-gray-50/50 py-16 text-center">
-                <Calendar className="mx-auto h-12 w-12 text-slate-300" />
+              <div className="my-4 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-12 text-center">
+                <Calendar size={48} className="text-indigo-300" />
                 <p className="mt-4 text-sm font-medium text-slate-600">No posts yet</p>
                 <p className="mt-1 text-sm text-slate-500">Create your first post to get started</p>
                 <button
@@ -966,12 +966,12 @@ export default function ClientWorkspacePage() {
             {/* New Post Modal */}
             {isPostModalOpen && (
               <div
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+                className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-gray-900/40 p-4 duration-200 backdrop-blur-sm fade-in"
                 onClick={() => setIsPostModalOpen(false)}
                 role="presentation"
               >
                 <div
-                  className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white shadow-xl"
+                  className="mx-4 w-full max-w-lg rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl duration-200 animate-in zoom-in-95 md:p-8"
                   onClick={(e) => e.stopPropagation()}
                   role="dialog"
                   aria-modal="true"
@@ -1144,8 +1144,8 @@ export default function ClientWorkspacePage() {
 
               if (assets.length === 0) {
                 return (
-                  <div className="rounded-xl border border-slate-200 bg-gray-50/30 py-12 text-center">
-                    <Image className="mx-auto h-12 w-12 text-slate-300" />
+                  <div className="my-4 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-12 text-center">
+                    <Image size={48} className="text-indigo-300" />
                     <p className="mt-4 text-sm font-medium text-slate-600">No assets yet</p>
                     <p className="mt-1 text-sm text-slate-500">Upload logos, images, or brand files to get started</p>
                   </div>
@@ -1286,8 +1286,8 @@ export default function ClientWorkspacePage() {
 
             {/* Campaigns Grid */}
             {campaigns.length === 0 ? (
-              <div className="rounded-xl border border-slate-200 bg-gray-50/50 py-16 text-center">
-                <Megaphone className="mx-auto h-12 w-12 text-slate-300" />
+              <div className="my-4 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-12 text-center">
+                <Megaphone size={48} className="text-indigo-300" />
                 <p className="mt-4 text-sm font-medium text-slate-600">No campaigns yet</p>
                 <p className="mt-1 text-sm text-slate-500">Create your first campaign to get started</p>
                 <button
@@ -1304,7 +1304,7 @@ export default function ClientWorkspacePage() {
                 {campaigns.map((campaign) => (
                   <div
                     key={campaign.id}
-                    className="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+                    className="relative rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
                   >
                     <button
                       type="button"
@@ -1314,12 +1314,12 @@ export default function ClientWorkspacePage() {
                       <Trash2 size={18} />
                     </button>
                     <span
-                      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                      className={`inline-flex w-fit rounded-full border px-2.5 py-1 text-xs font-medium ${
                         campaign.status === 'Planning' || campaign.status === 'Planned'
-                          ? 'bg-amber-100 text-amber-700'
+                          ? 'border-amber-100 bg-amber-50 text-amber-700'
                           : campaign.status === 'Active'
-                            ? 'bg-emerald-100 text-emerald-700'
-                            : 'bg-slate-100 text-slate-600'
+                            ? 'border-green-100 bg-green-50 text-green-700'
+                            : 'border-slate-200 bg-slate-50 text-slate-600'
                       }`}
                     >
                       {campaign.status}
@@ -1340,7 +1340,7 @@ export default function ClientWorkspacePage() {
                       type="button"
                       onClick={() => handleAutoFillCampaign(campaign)}
                       disabled={isGeneratingFor === campaign.id}
-                      className="mt-4 flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
+                      className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 py-2.5 font-medium text-white shadow-sm transition-all hover:from-indigo-600 hover:to-purple-700 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {isGeneratingFor === campaign.id ? (
                         <span className="inline-flex items-center justify-center gap-2">
@@ -1359,12 +1359,12 @@ export default function ClientWorkspacePage() {
             {/* New Campaign Modal */}
             {isCampaignModalOpen && (
               <div
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+                className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-gray-900/40 p-4 duration-200 backdrop-blur-sm fade-in"
                 onClick={() => setIsCampaignModalOpen(false)}
                 role="presentation"
               >
                 <div
-                  className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white shadow-xl"
+                  className="mx-4 w-full max-w-lg rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl duration-200 animate-in zoom-in-95 md:p-8"
                   onClick={(e) => e.stopPropagation()}
                   role="dialog"
                   aria-modal="true"

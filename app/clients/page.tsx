@@ -19,7 +19,7 @@ const STATUS_OPTIONS = ['Active', 'Inactive', 'Prospect'];
 export default function ClientsPage() {
   const router = useRouter();
   const [clients, setClients] = useState<Client[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -31,13 +31,13 @@ export default function ClientsPage() {
   });
 
   async function fetchClients() {
-    setLoading(true);
+    setIsLoading(true);
     setError(null);
     try {
       const { data, error: fetchError } = await supabase
         .from('clients')
         .select('*')
-        .order('name', { ascending: true });
+        .order('created_at', { ascending: false });
 
       if (fetchError) throw fetchError;
       setClients((data ?? []) as Client[]);
@@ -45,7 +45,7 @@ export default function ClientsPage() {
       setError(err instanceof Error ? err.message : 'Failed to fetch clients');
       setClients([]);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }
 
@@ -64,7 +64,7 @@ export default function ClientsPage() {
     try {
       const { error } = await supabase.from('clients').delete().eq('id', id);
       if (error) throw error;
-      setClients((prev) => prev.filter((c) => c.id !== id));
+      await fetchClients();
       toast.success('Client deleted successfully');
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to delete client');
@@ -77,20 +77,25 @@ export default function ClientsPage() {
     e.preventDefault();
     if (!form.name.trim() || !form.industry.trim()) return;
 
+    const toastId = toast.loading('Adding client...');
     setAdding(true);
     setError(null);
     try {
-      const { error: insertError } = await supabase.from('clients').insert({
-        name: form.name.trim(),
-        industry: form.industry.trim(),
-        status: form.status,
-      });
+      const { error: insertError } = await supabase.from('clients').insert([
+        {
+          name: form.name.trim(),
+          industry: form.industry.trim(),
+          status: form.status,
+        },
+      ]);
 
       if (insertError) throw insertError;
       closeModal();
       await fetchClients();
+      toast.success('Client added successfully!', { id: toastId });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add client');
+      toast.error(err instanceof Error ? err.message : 'Failed to add client', { id: toastId });
     } finally {
       setAdding(false);
     }
@@ -125,17 +130,16 @@ export default function ClientsPage() {
         </div>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        {loading ? (
+      {isLoading ? (
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           <div className="flex flex-col items-center justify-center py-24">
             <Loader2 className="h-10 w-10 animate-spin text-indigo-600" />
             <p className="mt-4 text-sm text-slate-500">Loading clients...</p>
           </div>
-        ) : clients.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 px-8 text-center">
-            <div className="rounded-2xl bg-indigo-50 p-8">
-              <Users className="mx-auto h-14 w-14 text-indigo-500" />
-            </div>
+        </div>
+      ) : clients.length === 0 ? (
+          <div className="my-8 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-12 text-center">
+            <Users size={48} className="text-indigo-300" />
             <h3 className="mt-6 text-lg font-semibold text-slate-900">No clients yet</h3>
             <p className="mt-2 max-w-sm text-sm text-slate-500">
               Get started by adding your first client. Click the button above to create one.
@@ -150,6 +154,7 @@ export default function ClientsPage() {
             </button>
           </div>
         ) : (
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200">
               <thead>
@@ -185,28 +190,33 @@ export default function ClientsPage() {
                   <tr
                     key={client.id}
                     onClick={() => router.push(`/clients/${client.id}`)}
-                    className="cursor-pointer transition-colors hover:bg-gray-50"
+                    className="cursor-pointer transition-colors hover:bg-gray-50/50"
                   >
                     <td className="whitespace-nowrap px-6 py-4">
-                      <Link
-                        href={`/clients/${client.id}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="font-medium text-slate-900 hover:text-indigo-600 hover:underline"
-                      >
-                        {client.name}
-                      </Link>
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-50 font-bold text-sm text-indigo-600">
+                          {client.name.charAt(0).toUpperCase()}
+                        </div>
+                        <Link
+                          href={`/clients/${client.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="font-medium text-gray-900 hover:text-indigo-600 hover:underline"
+                        >
+                          {client.name}
+                        </Link>
+                      </div>
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-slate-600">
                       {client.industry}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       <span
-                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                        className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${
                           client.status === 'Active'
-                            ? 'bg-emerald-50 text-emerald-700'
+                            ? 'border-green-100 bg-green-50 text-green-700'
                             : client.status === 'Inactive'
-                              ? 'bg-slate-100 text-slate-600'
-                              : 'bg-amber-50 text-amber-700'
+                              ? 'border-slate-200 bg-slate-50 text-slate-600'
+                              : 'border-amber-200 bg-amber-50 text-amber-700'
                         }`}
                       >
                         {client.status}
@@ -240,8 +250,8 @@ export default function ClientsPage() {
               </tbody>
             </table>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {clientToDelete && (
         <div className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-gray-900/40 duration-200 backdrop-blur-sm fade-in">
@@ -278,14 +288,14 @@ export default function ClientsPage() {
       )}
 
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-gray-900/40 p-4 duration-200 backdrop-blur-sm fade-in">
           <div
-            className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+            className="absolute inset-0"
             onClick={closeModal}
             aria-hidden="true"
           />
           <div
-            className="relative z-10 w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+            className="relative z-10 mx-4 w-full max-w-md rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl duration-200 animate-in zoom-in-95"
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-title"

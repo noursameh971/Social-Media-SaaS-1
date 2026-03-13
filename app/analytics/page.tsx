@@ -159,7 +159,7 @@ export default function AnalyticsPage() {
             type="button"
             onClick={handleGenerateInsight}
             disabled={isGeneratingInsight}
-            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white transition-all hover:shadow-lg disabled:opacity-50"
+            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50"
           >
             <Sparkles size={16} />
             {isGeneratingInsight ? 'Analyzing Data...' : 'Generate AI Insights'}
@@ -178,36 +178,36 @@ export default function AnalyticsPage() {
         ) : (
           <>
             <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
-                  <Layers size={24} />
+              <div className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                  <Layers size={20} />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-500">Total Content Output</p>
                   <p className="text-2xl font-bold text-slate-900">{kpis.totalContent}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
-                  <TrendingUp size={24} />
+              <div className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                  <TrendingUp size={20} />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-500">Publishing Efficiency</p>
                   <p className="text-2xl font-bold text-slate-900">{kpis.publishRate}%</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-purple-100 text-purple-600">
-                  <BarChart2 size={24} />
+              <div className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-purple-50 text-purple-600">
+                  <BarChart2 size={20} />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-500">Top Platform</p>
                   <p className="text-2xl font-bold text-slate-900">{kpis.topPlatform}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
-                  <CheckCircle size={24} />
+              <div className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-600">
+                  <CheckCircle size={20} />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-500">Task Completion</p>
@@ -220,11 +220,11 @@ export default function AnalyticsPage() {
               <div className="relative mb-8 overflow-hidden rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50 to-purple-50 p-6 shadow-sm">
                 <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-indigo-500 to-purple-500" />
                 <div className="flex items-start gap-4">
-                  <div className="mt-1 rounded-full bg-white p-2 text-indigo-600 shadow-sm">
+                  <div className="mt-1 rounded-full bg-white p-2 text-purple-500 shadow-sm animate-pulse">
                     <Sparkles size={20} />
                   </div>
                   <div>
-                    <h3 className="mb-2 text-sm font-bold uppercase tracking-wider text-indigo-900">
+                    <h3 className="mb-2 bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-sm font-bold uppercase tracking-wider text-transparent">
                       Executive AI Summary
                     </h3>
                     <p className="font-medium leading-relaxed text-indigo-800">{aiInsight}</p>
@@ -234,7 +234,7 @@ export default function AnalyticsPage() {
             )}
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
               <h2 className="mb-6 text-lg font-semibold text-slate-900">Content by Platform</h2>
               <div className="h-[300px] w-full">
                 {platformData.length > 0 ? (
@@ -262,7 +262,7 @@ export default function AnalyticsPage() {
                         formatter={(value: number) => [value, 'Posts']}
                       />
                       <Legend />
-                      <Bar dataKey="count" fill="#6366f1" radius={[6, 6, 0, 0]} barSize={40} name="Posts" />
+                      <Bar dataKey="count" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={40} name="Posts" />
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
@@ -273,7 +273,7 @@ export default function AnalyticsPage() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
               <h2 className="mb-6 text-lg font-semibold text-slate-900">Tasks Overview</h2>
               <div className="h-[300px] w-full">
                 {taskData.some((d) => d.value > 0) ? (
@@ -307,7 +307,7 @@ export default function AnalyticsPage() {
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="flex h-full items-center justify-center text-sm text-slate-500">
+                  <div className="flex h-full min-h-[250px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-6 text-center text-sm text-slate-500">
                     No tasks data yet
                   </div>
                 )}

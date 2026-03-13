@@ -19,6 +19,12 @@ const COLUMN_DOTS: Record<string, string> = {
   done: 'bg-emerald-500',
 };
 
+const COLUMN_HEADER_BG: Record<string, string> = {
+  todo: 'bg-gray-50/50 border-b border-gray-100 rounded-t-xl p-3',
+  'in-progress': 'bg-purple-50/30 border-b border-purple-100/50 rounded-t-xl p-3',
+  done: 'bg-emerald-50/30 border-b border-emerald-100/50 rounded-t-xl p-3',
+};
+
 type Task = {
   id: string;
   title: string;
@@ -296,9 +302,9 @@ export default function TasksPage() {
               {STATUSES.map((status) => (
                 <div
                   key={status}
-                  className="flex min-h-[400px] flex-col rounded-2xl border border-gray-100 bg-gray-50/50"
+                  className="flex min-h-[400px] flex-col overflow-hidden rounded-2xl border border-gray-100"
                 >
-                  <div className="flex items-center justify-between border-b border-gray-100 p-4">
+                  <div className={`flex items-center justify-between ${COLUMN_HEADER_BG[status]}`}>
                     <div className="flex items-center gap-2">
                       <span className={`h-2 w-2 rounded-full ${COLUMN_DOTS[status]}`} />
                       <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-700">
@@ -315,8 +321,8 @@ export default function TasksPage() {
                       <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        className={`flex flex-1 flex-col gap-3 p-4 ${
-                          snapshot.isDraggingOver ? 'rounded-xl bg-gray-100/50' : ''
+                        className={`flex flex-1 flex-col gap-3 rounded-b-xl bg-gray-50/30 p-2 ${
+                          snapshot.isDraggingOver ? 'bg-gray-100/50' : ''
                         }`}
                       >
                         {tasksByStatus[status].map((task, index) => (
@@ -326,10 +332,10 @@ export default function TasksPage() {
                                 ref={dragProvided.innerRef}
                                 {...dragProvided.draggableProps}
                                 {...dragProvided.dragHandleProps}
-                                className={`group relative rounded-xl border border-gray-100 bg-white p-4 shadow-sm ${
+                                className={`group relative cursor-pointer rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition-all duration-200 ${
                                   dragSnapshot.isDragging
                                     ? 'rotate-1 cursor-grabbing shadow-lg ring-2 ring-indigo-500/20'
-                                    : 'cursor-grab hover:shadow-md'
+                                    : 'cursor-grab hover:-translate-y-1 hover:shadow-md'
                                 }`}
                               >
                                 <div
@@ -363,7 +369,7 @@ export default function TasksPage() {
                                 <div className="mt-4 flex items-center justify-between">
                                   <div className="flex flex-wrap items-center gap-2">
                                     {getClientName(task) && (
-                                      <span className="rounded-md bg-gray-100 px-2 py-1 text-xs text-gray-600">
+                                      <span className="w-fit rounded-md bg-indigo-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-indigo-700">
                                         {getClientName(task)}
                                       </span>
                                     )}
@@ -400,9 +406,9 @@ export default function TasksPage() {
                         {provided.placeholder}
 
                         {tasksByStatus[status].length === 0 && !snapshot.isDraggingOver && (
-                          <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 py-12">
-                            <ListTodo className="h-10 w-10 text-gray-300" />
-                            <p className="mt-2 text-sm italic text-gray-400">No tasks</p>
+                          <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-8 text-center text-gray-400">
+                            <ListTodo className="h-10 w-10" />
+                            <p className="mt-2 text-sm italic">No tasks</p>
                           </div>
                         )}
                       </div>
@@ -417,11 +423,11 @@ export default function TasksPage() {
 
         {modalOpen && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-gray-900/40 p-4 backdrop-blur-sm fade-in duration-200"
             onClick={() => setModalOpen(false)}
           >
             <div
-              className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-2xl"
+              className="mx-4 w-full max-w-md rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl animate-in zoom-in-95 duration-200 md:p-8"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="mb-6 flex items-center justify-between">
@@ -443,7 +449,7 @@ export default function TasksPage() {
                     value={form.title}
                     onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                     placeholder="Enter task title"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 placeholder-slate-400 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <div>
@@ -451,7 +457,7 @@ export default function TasksPage() {
                   <select
                     value={form.client_id}
                     onChange={(e) => setForm((f) => ({ ...f, client_id: e.target.value }))}
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                   >
                     <option value="" disabled>Select client</option>
                     {clients.map((c) => (
@@ -467,7 +473,7 @@ export default function TasksPage() {
                     type="date"
                     value={form.due_date}
                     onChange={(e) => setForm((f) => ({ ...f, due_date: e.target.value }))}
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <div className="flex justify-end gap-3 border-t border-slate-100 pt-5">

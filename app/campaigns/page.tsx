@@ -6,10 +6,11 @@ import { supabase } from '@/lib/supabase';
 import { Plus, X, Loader2, Calendar, Megaphone, Sparkles, AlertCircle, Trash2, Edit2, Search } from 'lucide-react';
 
 const STATUS_STYLES: Record<string, string> = {
-  Draft: 'bg-slate-100 text-slate-700',
-  Planned: 'bg-slate-100 text-slate-700',
-  Active: 'bg-emerald-100 text-emerald-700',
-  Completed: 'bg-blue-100 text-blue-700',
+  Draft: 'border border-slate-200 bg-slate-50 text-slate-700',
+  Planned: 'border border-amber-100 bg-amber-50 text-amber-700',
+  Planning: 'border border-amber-100 bg-amber-50 text-amber-700',
+  Active: 'border border-green-100 bg-green-50 text-green-700',
+  Completed: 'border border-blue-100 bg-blue-50 text-blue-700',
 };
 
 type Campaign = {
@@ -377,7 +378,7 @@ export default function CampaignsPage() {
               {filteredCampaigns.map((campaign) => (
               <div
                 key={campaign.id}
-                className="group relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+                className="group relative rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
               >
                 <div className="absolute right-3 top-3 z-10 flex items-center gap-1 rounded-lg border border-gray-100 bg-white p-1 opacity-0 shadow-sm transition-opacity duration-200 group-hover:opacity-100">
                   <button
@@ -399,12 +400,12 @@ export default function CampaignsPage() {
                   </button>
                 </div>
                 <div className="mb-3 flex items-start justify-between gap-2">
-                  <span className="rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700">
+                  <span className="rounded-md bg-indigo-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-indigo-700">
                     {getClientName(campaign) || 'Unknown'}
                   </span>
                   <span
-                    className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium transition-opacity duration-200 group-hover:opacity-0 ${
-                      STATUS_STYLES[campaign.status] ?? 'bg-slate-100 text-slate-700'
+                    className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-medium transition-opacity duration-200 group-hover:opacity-0 ${
+                      STATUS_STYLES[campaign.status] ?? 'border-slate-200 bg-slate-50 text-slate-700'
                     }`}
                   >
                     {campaign.status}
@@ -456,19 +457,28 @@ export default function CampaignsPage() {
 
                     if (totalPosts === 0) {
                       return (
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1.5 text-xs font-medium text-amber-500">
-                            <AlertCircle size={14} />
-                            <span>Needs Content</span>
+                        <div>
+                          <div className="mb-2 flex items-center justify-between text-xs">
+                            <span className="font-medium text-gray-500">Progress</span>
+                            <span className="font-bold text-gray-900">0 / 5 Posts Ready</span>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => handleAutoFillCampaign(campaign)}
-                            disabled={isGeneratingFor === campaign.id}
-                            className="flex items-center gap-1 rounded-lg bg-gradient-to-r from-amber-400 to-orange-500 px-3 py-1.5 text-xs font-medium text-white transition-all hover:shadow-md disabled:opacity-50"
-                          >
-                            {isGeneratingFor === campaign.id ? 'Generating...' : '✨ Auto-Fill'}
-                          </button>
+                          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
+                            <div className="h-full rounded-full bg-emerald-500" style={{ width: '0%' }} />
+                          </div>
+                          <div className="mt-4 flex items-center justify-between">
+                            <div className="flex items-center gap-1.5 text-xs font-medium text-amber-500">
+                              <AlertCircle size={14} />
+                              <span>Needs Content</span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleAutoFillCampaign(campaign)}
+                              disabled={isGeneratingFor === campaign.id}
+                              className="flex items-center gap-1 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-all hover:from-indigo-600 hover:to-purple-700 disabled:opacity-50"
+                            >
+                              {isGeneratingFor === campaign.id ? 'Generating...' : '✨ Auto-Fill'}
+                            </button>
+                          </div>
                         </div>
                       );
                     }
@@ -481,11 +491,21 @@ export default function CampaignsPage() {
                             {readyPosts} / {totalPosts} Posts Ready
                           </span>
                         </div>
-                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
+                        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
                           <div
-                            className="h-1.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500"
+                            className="h-full rounded-full bg-emerald-500 transition-all duration-500"
                             style={{ width: `${progressPercentage}%` }}
                           />
+                        </div>
+                        <div className="mt-4 flex items-center justify-end">
+                          <button
+                            type="button"
+                            onClick={() => handleAutoFillCampaign(campaign)}
+                            disabled={isGeneratingFor === campaign.id}
+                            className="flex items-center gap-1 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-all hover:from-indigo-600 hover:to-purple-700 disabled:opacity-50"
+                          >
+                            {isGeneratingFor === campaign.id ? 'Generating...' : '✨ Auto-Fill'}
+                          </button>
                         </div>
                       </>
                     );
@@ -499,11 +519,11 @@ export default function CampaignsPage() {
 
         {isIdeatorOpen && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-gray-900/40 p-4 backdrop-blur-sm fade-in duration-200"
             onClick={() => setIsIdeatorOpen(false)}
           >
             <div
-              className="w-full max-w-2xl rounded-xl border border-slate-200 bg-white p-6 shadow-2xl"
+              className="mx-4 max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl animate-in zoom-in-95 md:p-8"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="mb-6 flex items-center justify-between">
@@ -518,7 +538,7 @@ export default function CampaignsPage() {
               </div>
 
               <div className="mb-6 flex flex-wrap items-end gap-4">
-                <div className="min-w-[180px] flex-1">
+                <div className="min-w-[160px] flex-1">
                   <label className="mb-1.5 block text-sm font-medium text-slate-700">Client</label>
                   <select
                     value={selectedClientId}
@@ -533,7 +553,7 @@ export default function CampaignsPage() {
                     ))}
                   </select>
                 </div>
-                <div className="min-w-[180px] flex-1">
+                <div className="min-w-[160px] flex-1">
                   <label className="mb-1.5 block text-sm font-medium text-slate-700">Theme</label>
                   <input
                     type="text"
@@ -547,7 +567,7 @@ export default function CampaignsPage() {
                   type="button"
                   onClick={handleGenerateIdeas}
                   disabled={isGenerating}
-                  className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:from-indigo-600 hover:to-purple-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isGenerating ? (
                     <>
@@ -575,14 +595,14 @@ export default function CampaignsPage() {
                     {generatedIdeas.map((idea, idx) => (
                       <div
                         key={idx}
-                        className="rounded-xl border border-gray-100 bg-gray-50 p-4"
+                        className="mb-4 rounded-xl border border-gray-100 bg-gray-50/50 p-5 transition-colors hover:bg-gray-50"
                       >
                         <h4 className="font-bold text-slate-900">{idea.name}</h4>
                         <p className="mt-2 text-sm text-gray-600">{idea.description}</p>
                         <button
                           type="button"
                           onClick={() => handleSaveCampaign(idea)}
-                          className="mt-4 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+                          className="mt-4 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-indigo-200 hover:text-indigo-600"
                         >
                           Save to Pipeline
                         </button>

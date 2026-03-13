@@ -71,6 +71,7 @@ type Stats = {
 };
 
 export default function DashboardPage() {
+  const [userName, setUserName] = useState('');
   const [stats, setStats] = useState<Stats>({
     totalClients: 0,
     activeCampaigns: 0,
@@ -80,6 +81,20 @@ export default function DashboardPage() {
   const [upcomingPosts, setUpcomingPosts] = useState<UpcomingPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState<UpcomingPost | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('profileSettings');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed?.firstName) setUserName(parsed.firstName);
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchDashboard() {
@@ -149,7 +164,7 @@ export default function DashboardPage() {
         {/* Greeting & Quick Actions */}
         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-slate-900">Welcome back, Team</h1>
+            <h1 className="text-2xl font-semibold text-slate-900">Welcome back, {userName || 'Team'} 👋</h1>
             <p className="mt-1 text-sm text-slate-500">{today}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -185,43 +200,43 @@ export default function DashboardPage() {
           ) : (
             <>
               <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                <div className="rounded-2xl bg-blue-50 p-3 text-blue-600">
                   <Users className="h-6 w-6" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-500">Total Clients</p>
                   <p className="text-2xl font-bold text-slate-900">{stats.totalClients}</p>
-                  <p className="mt-1 text-xs text-slate-400">+2 this week</p>
+                  <p className="mt-1 text-xs text-gray-400">{stats.totalClients > 0 ? '+2 this week' : 'No activity yet'}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-50 text-purple-600">
+                <div className="rounded-2xl bg-purple-50 p-3 text-purple-600">
                   <Megaphone className="h-6 w-6" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-500">Active Campaigns</p>
                   <p className="text-2xl font-bold text-slate-900">{stats.activeCampaigns}</p>
-                  <p className="mt-1 text-xs text-slate-400">+2 this week</p>
+                  <p className="mt-1 text-xs text-gray-400">{stats.activeCampaigns > 0 ? '+2 this week' : 'No activity yet'}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50 text-orange-600">
+                <div className="rounded-2xl bg-orange-50 p-3 text-orange-600">
                   <FileText className="h-6 w-6" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-500">Pending Posts</p>
                   <p className="text-2xl font-bold text-slate-900">{stats.pendingPosts}</p>
-                  <p className="mt-1 text-xs text-slate-400">+2 this week</p>
+                  <p className="mt-1 text-xs text-gray-400">{stats.pendingPosts > 0 ? '+2 this week' : 'No activity yet'}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                <div className="rounded-2xl bg-emerald-50 p-3 text-emerald-600">
                   <Image className="h-6 w-6" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-500">Brand Assets</p>
                   <p className="text-2xl font-bold text-slate-900">{stats.totalAssets}</p>
-                  <p className="mt-1 text-xs text-slate-400">+2 this week</p>
+                  <p className="mt-1 text-xs text-gray-400">{stats.totalAssets > 0 ? '+2 this week' : 'No activity yet'}</p>
                 </div>
               </div>
             </>
@@ -233,7 +248,15 @@ export default function DashboardPage() {
           {/* Left Section (Span 2) - Pipeline & Content */}
           <section className="lg:col-span-2">
             <h2 className="mb-4 text-lg font-semibold text-slate-900">Recent / Upcoming Content</h2>
-            <div className="overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
+            <div
+              className={
+                isLoading
+                  ? 'overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm'
+                  : upcomingPosts.length > 0
+                    ? 'overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm'
+                    : 'flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-8'
+              }
+            >
               {isLoading ? (
                 <div className="flex items-center justify-center gap-3 py-16">
                   <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
@@ -321,8 +344,8 @@ export default function DashboardPage() {
                   </tbody>
                 </table>
               ) : (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <Calendar className="h-12 w-12 text-slate-300" />
+                <div className="flex flex-col items-center justify-center text-center">
+                  <Calendar className="h-14 w-14 text-gray-300" />
                   <p className="mt-4 text-sm text-slate-500">No recent or upcoming content yet</p>
                   <Link
                     href="/content"
@@ -338,7 +361,13 @@ export default function DashboardPage() {
           {/* Right Section (Span 1) - Analytics & To-Dos */}
           <aside className="space-y-6">
             {/* Platform Distribution */}
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+            <div
+              className={
+                platformData.length > 0
+                  ? 'rounded-2xl border border-gray-100 bg-white p-6 shadow-sm'
+                  : 'flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-8'
+              }
+            >
               <h3 className="mb-4 text-sm font-semibold text-slate-900">Platform Distribution</h3>
               {platformData.length > 0 ? (
                 <div className="space-y-4">
@@ -363,12 +392,21 @@ export default function DashboardPage() {
                   })}
                 </div>
               ) : (
-                <p className="text-sm text-slate-500">No content yet</p>
+                <div className="flex flex-col items-center justify-center text-center">
+                  <FileText className="h-14 w-14 text-gray-300" />
+                  <p className="mt-4 text-sm text-slate-500">No content yet</p>
+                </div>
               )}
             </div>
 
             {/* Needs Attention */}
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+            <div
+              className={
+                needsAttention.length > 0
+                  ? 'rounded-2xl border border-gray-100 bg-white p-6 shadow-sm'
+                  : 'flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-8'
+              }
+            >
               <h3 className="mb-4 text-sm font-semibold text-slate-900">Needs Attention</h3>
               {needsAttention.length > 0 ? (
                 <ul className="space-y-3">
@@ -399,7 +437,10 @@ export default function DashboardPage() {
                   })}
                 </ul>
               ) : (
-                <p className="text-sm text-slate-500">All caught up</p>
+                <div className="flex flex-col items-center justify-center text-center">
+                  <AlertCircle className="h-14 w-14 text-gray-300" />
+                  <p className="mt-4 text-sm text-slate-500">All caught up</p>
+                </div>
               )}
             </div>
           </aside>
