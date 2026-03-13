@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabase';
-import { UserPlus, Building2, X, Loader2, Users } from 'lucide-react';
+import { UserPlus, Building2, X, Loader2, Users, Trash2 } from 'lucide-react';
 
 type Client = {
   id: string;
@@ -54,6 +55,18 @@ export default function ClientsPage() {
   function closeModal() {
     setModalOpen(false);
     setForm({ name: '', industry: '', status: 'Active' });
+  }
+
+  async function handleDelete(id: string) {
+    if (!window.confirm('Are you sure you want to delete this client? This cannot be undone.')) return;
+    try {
+      const { error } = await supabase.from('clients').delete().eq('id', id);
+      if (error) throw error;
+      setClients((prev) => prev.filter((c) => c.id !== id));
+      toast.success('Client deleted successfully');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to delete client');
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -191,13 +204,23 @@ export default function ClientsPage() {
                       </span>
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-right">
-                      <Link
-                        href={`/clients/${client.id}`}
-                        className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
-                      >
-                        <Building2 className="h-4 w-4" />
-                        Workspace
-                      </Link>
+                      <div className="flex items-center justify-end gap-2">
+                        <Link
+                          href={`/clients/${client.id}`}
+                          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                        >
+                          <Building2 className="h-4 w-4" />
+                          Workspace
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(client.id)}
+                          className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                          title="Delete client"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
