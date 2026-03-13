@@ -30,7 +30,7 @@ type Post = {
   status: string;
   created_at: string;
   client_id: string;
-  clients: { name: string } | null;
+  clients: { name: string } | { name: string }[] | null;
 };
 
 export default function ContentPage() {
@@ -61,7 +61,7 @@ export default function ContentPage() {
       .from('content_posts')
       .select('id, title, platform, format, content, status, created_at, client_id, clients(name)')
       .order('created_at', { ascending: false });
-    setPosts(data ?? []);
+    setPosts((data ?? []) as Post[]);
   }
 
   useEffect(() => {
@@ -79,7 +79,10 @@ export default function ContentPage() {
     new Map(
       posts.filter((p) => p.clients).map((p) => [p.client_id, p.clients])
     ).entries()
-  ).map(([id, clients]) => ({ id, name: (clients as { name?: string })?.name ?? 'Unknown' }));
+  ).map(([id, clients]) => ({
+    id,
+    name: Array.isArray(clients) ? clients[0]?.name ?? 'Unknown' : (clients as { name?: string })?.name ?? 'Unknown',
+  }));
 
   const uniquePlatforms = [...new Set(posts.map((p) => p.platform).filter(Boolean))].sort();
 
@@ -245,7 +248,7 @@ export default function ContentPage() {
                                 }`}
                               >
                                 <p className="text-xs font-medium text-indigo-600">
-                                  {(post.clients as { name?: string })?.name ?? 'Unknown Client'}
+                                  {Array.isArray(post.clients) ? post.clients[0]?.name : post.clients?.name ?? 'Unknown Client'}
                                 </p>
                                 <p className="mt-2 font-semibold text-slate-900">{post.title}</p>
                                 <div className="mt-3 flex flex-wrap gap-1.5">
@@ -299,7 +302,7 @@ export default function ContentPage() {
           >
             <div className="mb-6 flex flex-wrap gap-2">
               <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">
-                {(selectedPost.clients as { name?: string })?.name ?? 'Unknown Client'}
+                {Array.isArray(selectedPost.clients) ? selectedPost.clients[0]?.name : selectedPost.clients?.name ?? 'Unknown Client'}
               </span>
               <span
                 className={`rounded-full px-3 py-1 text-sm font-medium ${
