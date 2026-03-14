@@ -76,22 +76,23 @@ export default function SettingsPage() {
     return () => clearTimeout(t);
   }, [saveToast]);
 
-  async function fetchLogos() {
-    try {
-      const { data, error } = await supabase.storage.from('logos').list();
-      if (error) throw error;
-      const logos = (data ?? [])
-        .filter((f) => f.name && !f.name.startsWith('.'))
-        .map((f) => ({
-          name: f.name,
-          url: supabase.storage.from('logos').getPublicUrl(f.name).data.publicUrl,
-        }));
-      setAgencyLogos(logos);
-    } catch (err) {
-      console.error('Error fetching logos:', err);
-      setAgencyLogos([]);
+  const fetchLogos = async () => {
+    const { data, error } = await supabase.storage.from('logos').list();
+    if (error) {
+      console.error('Error fetching logos:', error);
+      return;
     }
-  }
+    if (data) {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const formattedLogos = data
+        .filter((file) => file.name !== '.emptyFolderPlaceholder')
+        .map((file) => ({
+          name: file.name,
+          url: `${supabaseUrl}/storage/v1/object/public/logos/${file.name}`,
+        }));
+      setAgencyLogos(formattedLogos);
+    }
+  };
 
   useEffect(() => {
     fetchLogos();
@@ -143,7 +144,8 @@ export default function SettingsPage() {
         .upload(fileName, file, { upsert: true });
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage.from('logos').getPublicUrl(uploadData.path);
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const publicUrl = `${supabaseUrl}/storage/v1/object/public/logos/${uploadData.path}`;
 
       setLogoUrl(publicUrl);
       localStorage.setItem('agencyLogo', publicUrl);
@@ -423,7 +425,8 @@ export default function SettingsPage() {
                             <img
                               src={logo.url}
                               alt={logo.name}
-                              className="h-full w-full object-contain"
+                              className="h-full w-full object-contain p-2"
+                              loading="lazy"
                             />
                             {isSelected && (
                               <span className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-white">
