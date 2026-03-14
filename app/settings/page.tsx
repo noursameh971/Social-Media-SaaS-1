@@ -83,13 +83,17 @@ export default function SettingsPage() {
       return;
     }
     if (data) {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
       const formattedLogos = data
         .filter((file) => file.name !== '.emptyFolderPlaceholder')
-        .map((file) => ({
-          name: file.name,
-          url: `${supabaseUrl}/storage/v1/object/public/logos/${file.name}`,
-        }));
+        .map((file) => {
+          const { data: { publicUrl } } = supabase.storage.from('logos').getPublicUrl(file.name);
+          return {
+            name: file.name,
+            url: publicUrl,
+          };
+        });
+
+      console.log('Fetched Logos:', formattedLogos);
       setAgencyLogos(formattedLogos);
     }
   };
