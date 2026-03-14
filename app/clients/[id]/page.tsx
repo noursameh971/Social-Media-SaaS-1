@@ -579,26 +579,28 @@ export default function ClientWorkspacePage() {
         <div className="flex items-center gap-4">
           <Link
             href="/clients"
-            className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+            className="rounded-lg p-2 text-slate-500 dark:text-gray-400 transition-colors hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-slate-700 dark:hover:text-gray-200"
           >
             <ChevronLeft className="h-5 w-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-semibold text-slate-900">{client.name}</h1>
-            <p className="mt-1 text-sm text-slate-500">{client.industry}</p>
+            <h1 className="text-2xl font-semibold text-slate-900 dark:text-gray-100">{client.name}</h1>
+            <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">{client.industry}</p>
           </div>
         </div>
       </header>
 
       {/* Tabbed Navigation */}
-      <nav className="inline-flex rounded-lg bg-slate-100 p-1">
+      <nav className="inline-flex rounded-lg bg-slate-100 dark:bg-gray-900 p-1">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
             className={`inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-              activeTab === tab.id ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+              activeTab === tab.id
+                ? 'bg-white dark:bg-gray-800 text-slate-900 dark:text-white shadow-sm'
+                : 'text-slate-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             {tab.icon}
@@ -608,7 +610,7 @@ export default function ClientWorkspacePage() {
       </nav>
 
       {/* Tab Content */}
-      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm lg:p-12">
+      <div className="rounded-xl border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm lg:p-12">
         {activeTab === 'strategy' && (
           <div className="relative space-y-6">
             {profileError && (
@@ -632,12 +634,12 @@ export default function ClientWorkspacePage() {
                 className="sr-only"
                 onChange={(e) => setSelectedFiles(e.target.files ? Array.from(e.target.files) : [])}
               />
-              <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-indigo-200 bg-indigo-50/50 px-6 py-4 transition-colors hover:bg-indigo-50 sm:flex-row sm:gap-4">
-                <label
+              <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-indigo-200 dark:border-indigo-800 bg-indigo-50/50 dark:bg-indigo-900/20 px-6 py-4 transition-colors hover:bg-indigo-50 dark:hover:bg-indigo-900/30 sm:flex-row sm:gap-4">
+                  <label
                   htmlFor="pdf-upload"
-                  className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-800"
+                  className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-600 dark:text-gray-400 hover:text-slate-800 dark:hover:text-gray-200"
                 >
-                  <UploadCloud className="h-5 w-5 flex-shrink-0 text-slate-400" />
+                  <UploadCloud className="h-5 w-5 flex-shrink-0 text-slate-400 dark:text-gray-500" />
                   {selectedFiles.length > 0
                     ? `${selectedFiles.length} file${selectedFiles.length !== 1 ? 's' : ''} selected — ${selectedFiles.map((f) => f.name).slice(0, 2).join(', ')}${selectedFiles.length > 2 ? '...' : ''}`
                     : 'Drop or click to upload brand documents (PDF, Word, PPT)'}
@@ -687,24 +689,24 @@ export default function ClientWorkspacePage() {
             {/* 2-Column Grid: Visual Identity (1) | Deep Strategy (2) */}
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
               {/* Left: Visual Identity */}
-              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h3 className="mb-5 text-xs font-semibold uppercase tracking-wider text-slate-500">Visual Identity</h3>
+              <div className="rounded-2xl border border-slate-200 dark:border-gray-800 bg-white/50 dark:bg-gray-800/50 p-6 shadow-sm">
+                <h3 className="mb-5 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-gray-400">Visual Identity</h3>
                 <div className="space-y-5">
                   <div>
-                    <label htmlFor="primary_color" className="mb-2 block text-sm font-medium text-gray-700">
+                    <label htmlFor="primary_color" className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-100">
                       Primary Color
                     </label>
                     <div className="flex items-center gap-3">
                       <div
                         style={{ backgroundColor: /^#[0-9A-Fa-f]{6}$/.test(primaryColor) ? primaryColor : '#1D4ED8' }}
-                        className="h-8 w-8 flex-shrink-0 rounded-full border border-slate-200 shadow-sm"
+                        className="h-8 w-8 flex-shrink-0 rounded-full border border-slate-200 dark:border-gray-700 shadow-sm"
                       />
                       <div className="flex flex-1 gap-2">
                         <input
                           type="color"
                           value={/^#[0-9A-Fa-f]{6}$/.test(primaryColor) ? primaryColor : '#1D4ED8'}
                           onChange={(e) => setPrimaryColor(e.target.value)}
-                          className="h-9 w-9 cursor-pointer rounded-lg border border-slate-200"
+                          className="h-9 w-9 cursor-pointer rounded-lg border border-slate-200 dark:border-gray-700"
                         />
                         <input
                           id="primary_color"
@@ -712,26 +714,26 @@ export default function ClientWorkspacePage() {
                           value={primaryColor}
                           onChange={(e) => setPrimaryColor(e.target.value)}
                           placeholder="#1D4ED8"
-                          className="flex-1 rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 font-mono text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                          className="flex-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-3 py-2 font-mono text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                         />
                       </div>
                     </div>
                   </div>
                   <div>
-                    <label htmlFor="secondary_color" className="mb-2 block text-sm font-medium text-gray-700">
+                    <label htmlFor="secondary_color" className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-100">
                       Secondary Color
                     </label>
                     <div className="flex items-center gap-3">
                       <div
                         style={{ backgroundColor: /^#[0-9A-Fa-f]{6}$/.test(secondaryColor) ? secondaryColor : '#F1F5F9' }}
-                        className="h-8 w-8 flex-shrink-0 rounded-full border border-slate-200 shadow-sm"
+                        className="h-8 w-8 flex-shrink-0 rounded-full border border-slate-200 dark:border-gray-700 shadow-sm"
                       />
                       <div className="flex flex-1 gap-2">
                         <input
                           type="color"
                           value={/^#[0-9A-Fa-f]{6}$/.test(secondaryColor) ? secondaryColor : '#F1F5F9'}
                           onChange={(e) => setSecondaryColor(e.target.value)}
-                          className="h-9 w-9 cursor-pointer rounded-lg border border-slate-200"
+                          className="h-9 w-9 cursor-pointer rounded-lg border border-slate-200 dark:border-gray-700"
                         />
                         <input
                           id="secondary_color"
@@ -739,13 +741,13 @@ export default function ClientWorkspacePage() {
                           value={secondaryColor}
                           onChange={(e) => setSecondaryColor(e.target.value)}
                           placeholder="#F1F5F9"
-                          className="flex-1 rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 font-mono text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                          className="flex-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-3 py-2 font-mono text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                         />
                       </div>
                     </div>
                   </div>
                   <div>
-                    <label htmlFor="heading_font" className="mb-2 block text-sm font-medium text-gray-700">
+                    <label htmlFor="heading_font" className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-100">
                       Heading Font
                     </label>
                     <input
@@ -754,11 +756,11 @@ export default function ClientWorkspacePage() {
                       value={headingFont}
                       onChange={(e) => setHeadingFont(e.target.value)}
                       placeholder="e.g. Inter, Playfair Display"
-                      className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                      className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-3 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                     />
                   </div>
                   <div>
-                    <label htmlFor="body_font" className="mb-2 block text-sm font-medium text-gray-700">
+                    <label htmlFor="body_font" className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-100">
                       Body Font
                     </label>
                     <input
@@ -767,7 +769,7 @@ export default function ClientWorkspacePage() {
                       value={bodyFont}
                       onChange={(e) => setBodyFont(e.target.value)}
                       placeholder="e.g. Roboto, Source Sans"
-                      className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                      className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-3 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                     />
                   </div>
                 </div>
@@ -775,16 +777,16 @@ export default function ClientWorkspacePage() {
 
               {/* Right: Deep Strategy (span 2) */}
               <div className="space-y-0 lg:col-span-2">
-                <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <div className="rounded-2xl border border-slate-200 dark:border-gray-800 bg-white/50 dark:bg-gray-800/50 shadow-sm">
                   {/* Core Identity & DNA */}
-                  <div className="border-b border-slate-100 p-6">
+                  <div className="border-b border-slate-100 dark:border-gray-800 p-6">
                     <div className="mb-4 flex items-center gap-2">
                       <Fingerprint className="h-4 w-4 text-indigo-500" />
-                      <h3 className="text-sm font-semibold text-slate-800">Core Identity & DNA</h3>
+                      <h3 className="text-sm font-semibold text-slate-800 dark:text-gray-100">Core Identity & DNA</h3>
                     </div>
                     <div className="space-y-4">
                       <div>
-                        <label htmlFor="brand_core" className="mb-1.5 block text-xs font-medium text-gray-600">
+                        <label htmlFor="brand_core" className="mb-1.5 block text-xs font-medium text-gray-600 dark:text-gray-400">
                           Brand Core / Mission
                         </label>
                         <textarea
@@ -793,11 +795,11 @@ export default function ClientWorkspacePage() {
                           value={brandCore}
                           onChange={(e) => setBrandCore(e.target.value)}
                           placeholder="Mission, vision, archetype, and core positioning..."
-                          className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm text-gray-700 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                          className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                         />
                       </div>
                       <div>
-                        <label htmlFor="business_model" className="mb-1.5 block text-xs font-medium text-gray-600">
+                        <label htmlFor="business_model" className="mb-1.5 block text-xs font-medium text-gray-600 dark:text-gray-400">
                           Business Model & Monetization
                         </label>
                         <textarea
@@ -806,17 +808,17 @@ export default function ClientWorkspacePage() {
                           value={businessModel}
                           onChange={(e) => setBusinessModel(e.target.value)}
                           placeholder="e.g., Direct-to-consumer luxury fashion, high-ticket items..."
-                          className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm text-gray-700 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                          className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                         />
                       </div>
                     </div>
                   </div>
 
                   {/* Target Market */}
-                  <div className="border-b border-slate-100 p-6">
+                  <div className="border-b border-slate-100 dark:border-gray-800 p-6">
                     <div className="mb-4 flex items-center gap-2">
                       <Target className="h-4 w-4 text-indigo-500" />
-                      <h3 className="text-sm font-semibold text-slate-800">Target Market</h3>
+                      <h3 className="text-sm font-semibold text-slate-800 dark:text-gray-100">Target Market</h3>
                     </div>
                     <textarea
                       id="target_market"
@@ -824,15 +826,15 @@ export default function ClientWorkspacePage() {
                       value={targetMarket}
                       onChange={(e) => setTargetMarket(e.target.value)}
                       placeholder="e.g., High-net-worth individuals, 25-45, urban..."
-                      className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm text-gray-700 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                      className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                     />
                   </div>
 
                   {/* Art Direction & Aesthetic */}
-                  <div className="border-b border-slate-100 p-6">
+                  <div className="border-b border-slate-100 dark:border-gray-800 p-6">
                     <div className="mb-4 flex items-center gap-2">
                       <Camera className="h-4 w-4 text-indigo-500" />
-                      <h3 className="text-sm font-semibold text-slate-800">Art Direction & Aesthetic</h3>
+                      <h3 className="text-sm font-semibold text-slate-800 dark:text-gray-100">Art Direction & Aesthetic</h3>
                     </div>
                     <textarea
                       id="art_direction"
@@ -840,7 +842,7 @@ export default function ClientWorkspacePage() {
                       value={artDirection}
                       onChange={(e) => setArtDirection(e.target.value)}
                       placeholder="e.g., Minimalist, harsh shadows, editorial high-fashion photography..."
-                      className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm text-gray-700 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                      className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                     />
                   </div>
 
@@ -848,7 +850,7 @@ export default function ClientWorkspacePage() {
                   <div className="p-6">
                     <div className="mb-4 flex items-center gap-2">
                       <ListChecks className="h-4 w-4 text-indigo-500" />
-                      <h3 className="text-sm font-semibold text-slate-800">Custom Rules</h3>
+                      <h3 className="text-sm font-semibold text-slate-800 dark:text-gray-100">Custom Rules</h3>
                     </div>
                     <textarea
                       id="custom_rules"
@@ -856,7 +858,7 @@ export default function ClientWorkspacePage() {
                       value={customRules}
                       onChange={(e) => setCustomRules(e.target.value)}
                       placeholder="e.g., Target Gen Z, humorous tone, focus on video..."
-                      className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm text-gray-700 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                      className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                     />
                   </div>
                 </div>
@@ -875,7 +877,7 @@ export default function ClientWorkspacePage() {
 
             {/* Content Pipeline Header */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <h2 className="text-lg font-semibold text-slate-900">Content Pipeline</h2>
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-100">Content Pipeline</h2>
               <button
                 type="button"
                 onClick={() => setIsPostModalOpen(true)}
@@ -888,10 +890,10 @@ export default function ClientWorkspacePage() {
 
             {/* Pipeline View */}
             {savedPosts.length === 0 ? (
-              <div className="my-4 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-12 text-center">
+              <div className="my-4 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 p-12 text-center">
                 <Calendar size={48} className="text-indigo-300" />
-                <p className="mt-4 text-sm font-medium text-slate-600">No posts yet</p>
-                <p className="mt-1 text-sm text-slate-500">Create your first post to get started</p>
+                <p className="mt-4 text-sm font-medium text-slate-600 dark:text-gray-400">No posts yet</p>
+                <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">Create your first post to get started</p>
                 <button
                   type="button"
                   onClick={() => setIsPostModalOpen(true)}
@@ -906,12 +908,12 @@ export default function ClientWorkspacePage() {
                 {savedPosts.map((post) => (
                   <div
                     key={post.id}
-                    className="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+                    className="relative rounded-xl border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-800/50 p-5 shadow-sm transition-shadow hover:shadow-md"
                   >
                     <button
                       type="button"
                       onClick={() => setPostToDelete(post.id)}
-                      className="absolute top-4 right-4 text-gray-400 transition-colors hover:text-red-500"
+                      className="absolute top-4 right-4 text-gray-400 dark:text-gray-500 transition-colors hover:text-red-500"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -934,25 +936,25 @@ export default function ClientWorkspacePage() {
                       <span
                         className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
                           (post.status ?? 'idea') === 'idea'
-                            ? 'bg-slate-100 text-slate-600'
+                            ? 'bg-slate-100 dark:bg-gray-700 text-slate-600 dark:text-gray-300'
                             : (post.status ?? 'idea') === 'draft'
-                              ? 'bg-amber-100 text-amber-700'
+                              ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300'
                               : (post.status ?? 'idea') === 'review'
-                                ? 'bg-blue-100 text-blue-700'
+                                ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
                                 : (post.status ?? 'idea') === 'approved'
-                                  ? 'bg-emerald-100 text-emerald-700'
-                                  : 'bg-slate-100 text-slate-600'
+                                  ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300'
+                                  : 'bg-slate-100 dark:bg-gray-700 text-slate-600 dark:text-gray-300'
                         }`}
                       >
                         {(post.status ?? 'idea').charAt(0).toUpperCase() + (post.status ?? 'idea').slice(1)}
                       </span>
                     </div>
-                    <h3 className="mb-2 font-semibold text-slate-900 line-clamp-1">{post.title}</h3>
-                    <p className="line-clamp-3 text-sm text-slate-600">{post.content}</p>
+                    <h3 className="mb-2 font-semibold text-slate-900 dark:text-gray-100 line-clamp-1">{post.title}</h3>
+                    <p className="line-clamp-3 text-sm text-slate-600 dark:text-gray-400">{post.content}</p>
                     {post.campaign_id && (() => {
                       const campaignName = campaigns.find((c) => c.id === post.campaign_id)?.name;
                       return campaignName ? (
-                        <div className="mt-3 flex items-center gap-1.5 text-xs text-gray-500">
+                        <div className="mt-3 flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
                           <Folder className="h-3 w-3 flex-shrink-0" />
                           <span className="truncate">{campaignName}</span>
                         </div>
@@ -971,39 +973,39 @@ export default function ClientWorkspacePage() {
                 role="presentation"
               >
                 <div
-                  className="mx-4 w-full max-w-lg rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl duration-200 animate-in zoom-in-95 md:p-8"
+                  className="mx-4 w-full max-w-lg rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-2xl duration-200 animate-in zoom-in-95 md:p-8"
                   onClick={(e) => e.stopPropagation()}
                   role="dialog"
                   aria-modal="true"
                   aria-labelledby="new-post-title"
                 >
-                  <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-                    <h3 id="new-post-title" className="text-lg font-semibold text-slate-900">New Post</h3>
+                  <div className="flex items-center justify-between border-b border-slate-100 dark:border-gray-800 px-6 py-4">
+                    <h3 id="new-post-title" className="text-lg font-semibold text-slate-900 dark:text-gray-100">New Post</h3>
                     <button
                       type="button"
                       onClick={() => setIsPostModalOpen(false)}
-                      className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                      className="rounded-lg p-2 text-slate-400 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-slate-600 dark:hover:text-gray-200"
                     >
                       <X className="h-5 w-5" />
                     </button>
                   </div>
                   <div className="space-y-4 p-6">
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-slate-700">Post Title (Internal Name)</label>
+                      <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-100">Post Title (Internal Name)</label>
                       <input
                         type="text"
                         value={postTitle}
                         onChange={(e) => setPostTitle(e.target.value)}
                         placeholder="e.g. Summer Campaign - Week 1"
-                        className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                       />
                     </div>
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-slate-700">Platform</label>
+                      <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-100">Platform</label>
                       <select
                         value={newPostPlatform}
                         onChange={(e) => setNewPostPlatform(e.target.value)}
-                        className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-2.5 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                       >
                         <option value="Instagram">Instagram</option>
                         <option value="LinkedIn">LinkedIn</option>
@@ -1012,20 +1014,20 @@ export default function ClientWorkspacePage() {
                       </select>
                     </div>
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-slate-700">Scheduled Date</label>
+                      <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-100">Scheduled Date</label>
                       <input
                         type="date"
                         value={newPostScheduledDate}
                         onChange={(e) => setNewPostScheduledDate(e.target.value)}
-                        className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-2.5 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                       />
                     </div>
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-slate-700">Status</label>
+                      <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-100">Status</label>
                       <select
                         value={newPostStatus}
                         onChange={(e) => setNewPostStatus(e.target.value)}
-                        className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-2.5 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                       >
                         <option value="idea">Idea</option>
                         <option value="draft">Draft</option>
@@ -1034,11 +1036,11 @@ export default function ClientWorkspacePage() {
                       </select>
                     </div>
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-slate-700">Campaign (Optional)</label>
+                      <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-100">Campaign (Optional)</label>
                       <select
                         value={postCampaignId}
                         onChange={(e) => setPostCampaignId(e.target.value)}
-                        className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-2.5 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                       >
                         <option value="">None / Standalone Post</option>
                         {campaigns.map((c) => (
@@ -1047,7 +1049,7 @@ export default function ClientWorkspacePage() {
                       </select>
                     </div>
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-slate-700">Content</label>
+                      <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-100">Content</label>
                       <button
                         type="button"
                         onClick={handleDraftWithAI}
@@ -1071,15 +1073,15 @@ export default function ClientWorkspacePage() {
                         onChange={(e) => setNewPostContent(e.target.value)}
                         rows={6}
                         placeholder="Write your post content..."
-                        className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm text-gray-700 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                       />
                     </div>
                   </div>
-                  <div className="flex justify-end gap-3 border-t border-slate-100 px-6 py-4">
+                  <div className="flex justify-end gap-3 border-t border-slate-100 dark:border-gray-800 px-6 py-4">
                     <button
                       type="button"
                       onClick={() => setIsPostModalOpen(false)}
-                      className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
+                      className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-800"
                     >
                       Cancel
                     </button>
@@ -1119,20 +1121,20 @@ export default function ClientWorkspacePage() {
             />
             <label
               htmlFor="asset-upload"
-              className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 bg-gray-50/50 px-6 py-10 transition-colors hover:border-indigo-300 hover:bg-indigo-50/30 ${
+              className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 px-6 py-10 transition-colors hover:border-indigo-300 dark:hover:border-indigo-600 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/20 ${
                 isUploadingAsset ? 'cursor-not-allowed opacity-60' : ''
               }`}
             >
               {isUploadingAsset ? (
                 <>
                   <Loader2 className="h-10 w-10 animate-spin text-indigo-500" />
-                  <span className="text-sm font-medium text-slate-600">Uploading...</span>
+                  <span className="text-sm font-medium text-slate-600 dark:text-gray-400">Uploading...</span>
                 </>
               ) : (
                 <>
-                  <UploadCloud className="h-10 w-10 text-slate-400" />
-                  <span className="text-sm font-medium text-slate-600">Drop or click to upload assets</span>
-                  <span className="text-xs text-slate-500">Images, PDFs, Word, PowerPoint</span>
+                  <UploadCloud className="h-10 w-10 text-slate-400 dark:text-gray-500" />
+                  <span className="text-sm font-medium text-slate-600 dark:text-gray-400">Drop or click to upload assets</span>
+                  <span className="text-xs text-slate-500 dark:text-gray-400">Images, PDFs, Word, PowerPoint</span>
                 </>
               )}
             </label>
@@ -1144,10 +1146,10 @@ export default function ClientWorkspacePage() {
 
               if (assets.length === 0) {
                 return (
-                  <div className="my-4 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-12 text-center">
+                  <div className="my-4 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 p-12 text-center">
                     <Image size={48} className="text-indigo-300" />
-                    <p className="mt-4 text-sm font-medium text-slate-600">No assets yet</p>
-                    <p className="mt-1 text-sm text-slate-500">Upload logos, images, or brand files to get started</p>
+                    <p className="mt-4 text-sm font-medium text-slate-600 dark:text-gray-400">No assets yet</p>
+                    <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">Upload logos, images, or brand files to get started</p>
                   </div>
                 );
               }
@@ -1157,12 +1159,12 @@ export default function ClientWorkspacePage() {
                   {/* Brand Images */}
                   {imageAssets.length > 0 && (
                     <div>
-                      <h3 className="mb-4 text-lg font-semibold text-slate-900">Brand Images</h3>
+                      <h3 className="mb-4 text-lg font-semibold text-slate-900 dark:text-gray-100">Brand Images</h3>
                       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                         {imageAssets.map((asset) => (
                           <div
                             key={asset.id}
-                            className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md"
+                            className="group relative overflow-hidden rounded-xl border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-800/50 shadow-sm transition-shadow hover:shadow-md"
                           >
                             <div className="aspect-square overflow-hidden">
                               <img
@@ -1177,14 +1179,14 @@ export default function ClientWorkspacePage() {
                                 download={asset.file_name}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="rounded-lg bg-white/90 p-2 text-slate-700 shadow-sm transition-colors hover:bg-white"
+                                className="rounded-lg bg-white/90 dark:bg-gray-800/90 p-2 text-slate-700 dark:text-gray-200 shadow-sm transition-colors hover:bg-white dark:hover:bg-gray-700"
                               >
                                 <Download className="h-5 w-5" />
                               </a>
                               <button
                                 type="button"
                                 onClick={() => setAssetToDelete(asset.id)}
-                                className="rounded-lg bg-white/90 p-2 text-red-600 shadow-sm transition-colors hover:bg-white hover:text-red-700"
+                                className="rounded-lg bg-white/90 dark:bg-gray-800/90 p-2 text-red-600 shadow-sm transition-colors hover:bg-white dark:hover:bg-gray-700 hover:text-red-700"
                               >
                                 <Trash2 className="h-5 w-5" />
                               </button>
@@ -1198,18 +1200,18 @@ export default function ClientWorkspacePage() {
                   {/* Brand Documents */}
                   {documentAssets.length > 0 && (
                     <div>
-                      <h3 className="mb-4 text-lg font-semibold text-slate-900">Brand Documents</h3>
+                      <h3 className="mb-4 text-lg font-semibold text-slate-900 dark:text-gray-100">Brand Documents</h3>
                       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                         {documentAssets.map((asset) => (
                           <div
                             key={asset.id}
-                            className="group flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+                            className="group flex items-center gap-4 rounded-xl border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-800/50 p-4 shadow-sm transition-shadow hover:shadow-md"
                           >
-                            <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg bg-slate-100">
-                              <FileText className="h-8 w-8 text-slate-500" />
+                            <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-gray-700">
+                              <FileText className="h-8 w-8 text-slate-500 dark:text-gray-400" />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className="truncate text-sm font-medium text-slate-900" title={asset.file_name}>
+                              <p className="truncate text-sm font-medium text-slate-900 dark:text-gray-100" title={asset.file_name}>
                                 {asset.file_name}
                               </p>
                             </div>
@@ -1219,14 +1221,14 @@ export default function ClientWorkspacePage() {
                                 download={asset.file_name}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="rounded-lg p-2 text-slate-600 transition-colors hover:bg-slate-100 hover:text-indigo-600"
+                                className="rounded-lg p-2 text-slate-600 dark:text-gray-400 transition-colors hover:bg-slate-100 dark:hover:bg-gray-700 hover:text-indigo-600"
                               >
                                 <Download className="h-5 w-5" />
                               </a>
                               <button
                                 type="button"
                                 onClick={() => setAssetToDelete(asset.id)}
-                                className="rounded-lg p-2 text-slate-600 transition-colors hover:bg-red-50 hover:text-red-600"
+                                className="rounded-lg p-2 text-slate-600 dark:text-gray-400 transition-colors hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600"
                               >
                                 <Trash2 className="h-5 w-5" />
                               </button>
@@ -1243,15 +1245,15 @@ export default function ClientWorkspacePage() {
             {/* Delete Asset Modal */}
             {assetToDelete && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                <div className="mx-4 w-full max-w-sm transform rounded-2xl bg-white p-6 shadow-xl transition-all">
+                <div className="mx-4 w-full max-w-sm transform rounded-2xl bg-white dark:bg-gray-900 p-6 shadow-xl transition-all border border-gray-100 dark:border-gray-800">
                   <AlertTriangle className="h-12 w-12 text-red-500" />
-                  <h3 className="mt-4 text-lg font-semibold text-gray-900">Delete Asset</h3>
-                  <p className="mt-2 text-sm text-gray-500">Are you sure you want to delete this asset? This action cannot be undone.</p>
+                  <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Delete Asset</h3>
+                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Are you sure you want to delete this asset? This action cannot be undone.</p>
                   <div className="mt-6 flex justify-end gap-3">
                     <button
                       type="button"
                       onClick={() => setAssetToDelete(null)}
-                      className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
+                      className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
                     >
                       Cancel
                     </button>
@@ -1273,7 +1275,7 @@ export default function ClientWorkspacePage() {
           <div className="space-y-6">
             {/* Campaign Pipeline Header */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <h2 className="text-lg font-semibold text-slate-900">Campaign Pipeline</h2>
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-100">Campaign Pipeline</h2>
               <button
                 type="button"
                 onClick={() => setIsCampaignModalOpen(true)}
@@ -1286,10 +1288,10 @@ export default function ClientWorkspacePage() {
 
             {/* Campaigns Grid */}
             {campaigns.length === 0 ? (
-              <div className="my-4 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-12 text-center">
+              <div className="my-4 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 p-12 text-center">
                 <Megaphone size={48} className="text-indigo-300" />
-                <p className="mt-4 text-sm font-medium text-slate-600">No campaigns yet</p>
-                <p className="mt-1 text-sm text-slate-500">Create your first campaign to get started</p>
+                <p className="mt-4 text-sm font-medium text-slate-600 dark:text-gray-400">No campaigns yet</p>
+                <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">Create your first campaign to get started</p>
                 <button
                   type="button"
                   onClick={() => setIsCampaignModalOpen(true)}
@@ -1304,32 +1306,32 @@ export default function ClientWorkspacePage() {
                 {campaigns.map((campaign) => (
                   <div
                     key={campaign.id}
-                    className="relative rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+                    className="relative rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/50 p-5 shadow-sm transition-shadow hover:shadow-md"
                   >
                     <button
                       type="button"
                       onClick={() => setCampaignToDelete(campaign.id)}
-                      className="absolute top-4 right-4 text-gray-400 transition-colors hover:text-red-500"
+                      className="absolute top-4 right-4 text-gray-400 dark:text-gray-500 transition-colors hover:text-red-500"
                     >
                       <Trash2 size={18} />
                     </button>
                     <span
                       className={`inline-flex w-fit rounded-full border px-2.5 py-1 text-xs font-medium ${
                         campaign.status === 'Planning' || campaign.status === 'Planned'
-                          ? 'border-amber-100 bg-amber-50 text-amber-700'
+                          ? 'border-amber-100 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300'
                           : campaign.status === 'Active'
-                            ? 'border-green-100 bg-green-50 text-green-700'
-                            : 'border-slate-200 bg-slate-50 text-slate-600'
+                            ? 'border-green-100 dark:border-green-800 bg-green-50 dark:bg-green-900/40 text-green-700 dark:text-green-300'
+                            : 'border-slate-200 dark:border-gray-700 bg-slate-50 dark:bg-gray-700 text-slate-600 dark:text-gray-300'
                       }`}
                     >
                       {campaign.status}
                     </span>
-                    <h3 className="mt-3 text-lg font-bold text-slate-900">{campaign.name}</h3>
+                    <h3 className="mt-3 text-lg font-bold text-slate-900 dark:text-gray-100">{campaign.name}</h3>
                     {campaign.description && (
-                      <p className="mt-2 line-clamp-2 text-sm text-gray-500">{campaign.description}</p>
+                      <p className="mt-2 line-clamp-2 text-sm text-gray-500 dark:text-gray-400">{campaign.description}</p>
                     )}
                     {(campaign.start_date || campaign.end_date) && (
-                      <div className="mt-4 flex items-center gap-1.5 text-xs text-slate-500">
+                      <div className="mt-4 flex items-center gap-1.5 text-xs text-slate-500 dark:text-gray-400">
                         <Calendar className="h-3.5 w-3.5 flex-shrink-0" />
                         <span>
                           {campaign.start_date ?? '—'} – {campaign.end_date ?? '—'}
@@ -1364,39 +1366,39 @@ export default function ClientWorkspacePage() {
                 role="presentation"
               >
                 <div
-                  className="mx-4 w-full max-w-lg rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl duration-200 animate-in zoom-in-95 md:p-8"
+                  className="mx-4 w-full max-w-lg rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-2xl duration-200 animate-in zoom-in-95 md:p-8"
                   onClick={(e) => e.stopPropagation()}
                   role="dialog"
                   aria-modal="true"
                   aria-labelledby="new-campaign-title"
                 >
-                  <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-                    <h3 id="new-campaign-title" className="text-lg font-semibold text-slate-900">Create New Campaign</h3>
+                  <div className="flex items-center justify-between border-b border-slate-100 dark:border-gray-800 px-6 py-4">
+                    <h3 id="new-campaign-title" className="text-lg font-semibold text-slate-900 dark:text-gray-100">Create New Campaign</h3>
                     <button
                       type="button"
                       onClick={() => setIsCampaignModalOpen(false)}
-                      className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                      className="rounded-lg p-2 text-slate-400 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-slate-600 dark:hover:text-gray-200"
                     >
                       <X className="h-5 w-5" />
                     </button>
                   </div>
                   <div className="space-y-4 p-6">
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-slate-700">Campaign Name</label>
+                      <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-100">Campaign Name</label>
                       <input
                         type="text"
                         value={campaignName}
                         onChange={(e) => setCampaignName(e.target.value)}
                         placeholder="e.g. Summer Sale 2025"
-                        className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                       />
                     </div>
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-slate-700">Status</label>
+                      <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-100">Status</label>
                       <select
                         value={campaignStatus}
                         onChange={(e) => setCampaignStatus(e.target.value)}
-                        className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-2.5 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                       >
                         <option value="Planning">Planning</option>
                         <option value="Active">Active</option>
@@ -1405,40 +1407,40 @@ export default function ClientWorkspacePage() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="mb-1.5 block text-sm font-medium text-slate-700">Start Date</label>
+                        <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-100">Start Date</label>
                         <input
                           type="date"
                           value={campaignStartDate}
                           onChange={(e) => setCampaignStartDate(e.target.value)}
-                          className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-2.5 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                          className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                         />
                       </div>
                       <div>
-                        <label className="mb-1.5 block text-sm font-medium text-slate-700">End Date</label>
+                        <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-100">End Date</label>
                         <input
                           type="date"
                           value={campaignEndDate}
                           onChange={(e) => setCampaignEndDate(e.target.value)}
-                          className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-2.5 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                          className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-slate-700">Description</label>
+                      <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-100">Description</label>
                       <textarea
                         value={campaignDescription}
                         onChange={(e) => setCampaignDescription(e.target.value)}
                         rows={4}
                         placeholder="Describe the campaign goals and scope..."
-                        className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm text-gray-700 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                       />
                     </div>
                   </div>
-                  <div className="flex justify-end gap-3 border-t border-slate-100 px-6 py-4">
+                  <div className="flex justify-end gap-3 border-t border-slate-100 dark:border-gray-800 px-6 py-4">
                     <button
                       type="button"
                       onClick={() => setIsCampaignModalOpen(false)}
-                      className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
+                      className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-800"
                     >
                       Cancel
                     </button>
@@ -1467,15 +1469,15 @@ export default function ClientWorkspacePage() {
         {/* Delete Post Modal */}
         {postToDelete && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="mx-4 w-full max-w-sm transform rounded-2xl bg-white p-6 shadow-xl transition-all">
+            <div className="mx-4 w-full max-w-sm transform rounded-2xl bg-white dark:bg-gray-900 p-6 shadow-xl transition-all border border-gray-100 dark:border-gray-800">
               <AlertTriangle className="h-12 w-12 text-red-500" />
-              <h3 className="mt-4 text-lg font-semibold text-gray-900">Delete Post</h3>
-              <p className="mt-2 text-sm text-gray-500">Are you sure you want to delete this post?</p>
+              <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Delete Post</h3>
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Are you sure you want to delete this post?</p>
               <div className="mt-6 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setPostToDelete(null)}
-                  className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
+                  className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
                 >
                   Cancel
                 </button>
@@ -1494,15 +1496,15 @@ export default function ClientWorkspacePage() {
         {/* Delete Campaign Modal */}
         {campaignToDelete && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="mx-4 w-full max-w-sm transform rounded-2xl bg-white p-6 shadow-xl transition-all">
+            <div className="mx-4 w-full max-w-sm transform rounded-2xl bg-white dark:bg-gray-900 p-6 shadow-xl transition-all border border-gray-100 dark:border-gray-800">
               <AlertTriangle className="h-12 w-12 text-red-500" />
-              <h3 className="mt-4 text-lg font-semibold text-gray-900">Delete Campaign</h3>
-              <p className="mt-2 text-sm text-gray-500">Are you sure? This might delete associated posts depending on DB cascading.</p>
+              <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Delete Campaign</h3>
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Are you sure? This might delete associated posts depending on DB cascading.</p>
               <div className="mt-6 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setCampaignToDelete(null)}
-                  className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
+                  className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
                 >
                   Cancel
                 </button>

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useTheme } from 'next-themes';
 import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabase';
-import { User, Briefcase, Bell, Save, Bot, Key, Sparkles, Building2, UploadCloud, Globe, Users, Mail, Shield, Trash2, UserPlus, Moon, Sun, Loader2 } from 'lucide-react';
+import { User, Briefcase, Bell, Save, Bot, Key, Sparkles, Building2, UploadCloud, Globe, Users, Mail, Shield, Trash2, UserPlus, Moon, Sun, Loader2, Check } from 'lucide-react';
 
 const TABS = [
   { id: 'profile', label: 'Profile', icon: User },
@@ -27,13 +27,13 @@ export default function SettingsPage() {
   const [agencyName, setAgencyName] = useState('');
   const [website, setWebsite] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
+  const [agencyLogos, setAgencyLogos] = useState<{ name: string; url: string }[]>([]);
 
   const [emailTasks, setEmailTasks] = useState(false);
   const [weeklyReport, setWeeklyReport] = useState(false);
   const [clientUpdates, setClientUpdates] = useState(false);
   const { setTheme, resolvedTheme } = useTheme();
   const [logoUploading, setLogoUploading] = useState(false);
-  const [logoError, setLogoError] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
   const [teamMembers, setTeamMembers] = useState<{ id: string; email: string; role: string; status?: string }[]>([]);
@@ -76,9 +76,26 @@ export default function SettingsPage() {
     return () => clearTimeout(t);
   }, [saveToast]);
 
+  async function fetchLogos() {
+    try {
+      const { data, error } = await supabase.storage.from('logos').list();
+      if (error) throw error;
+      const logos = (data ?? [])
+        .filter((f) => f.name && !f.name.startsWith('.'))
+        .map((f) => ({
+          name: f.name,
+          url: supabase.storage.from('logos').getPublicUrl(f.name).data.publicUrl,
+        }));
+      setAgencyLogos(logos);
+    } catch (err) {
+      console.error('Error fetching logos:', err);
+      setAgencyLogos([]);
+    }
+  }
+
   useEffect(() => {
-    console.log('FINAL_LOGO_URL:', logoUrl);
-  }, [logoUrl]);
+    fetchLogos();
+  }, []);
 
   async function fetchTeamMembers() {
     const { data, error } = await supabase
@@ -131,14 +148,30 @@ export default function SettingsPage() {
       setLogoUrl(publicUrl);
       localStorage.setItem('agencyLogo', publicUrl);
       window.dispatchEvent(new Event('agency-settings-updated'));
-      setLogoError(false);
-      toast.success('Logo uploaded! Click Save to apply.', { id: toastId });
+      await fetchLogos();
+      toast.success('Logo uploaded successfully!', { id: toastId });
     } catch (err) {
       toast.error('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'), { id: toastId });
     } finally {
       setLogoUploading(false);
       e.target.value = '';
     }
+  };
+
+  const handleDropzoneFile = (file: File) => {
+    if (!file.type.startsWith('image/')) return;
+    const input = logoInputRef.current;
+    if (!input) return;
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    input.files = dt.files;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  };
+
+  const handleSelectLogo = (url: string) => {
+    setLogoUrl(url);
+    localStorage.setItem('agencyLogo', url);
+    window.dispatchEvent(new Event('agency-settings-updated'));
   };
 
   function handleSaveAIConfig() {
@@ -326,47 +359,82 @@ export default function SettingsPage() {
                     <UploadCloud className="h-4 w-4" />
                     Logo
                   </label>
-                  <div className="flex items-center gap-4">
-                    <div className="mb-4 flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-                      {logoUrl ? (
-                        <img
-                          src={logoUrl}
-                          alt="Agency Logo"
-                          className="h-full w-full object-contain p-1"
-                          onError={() => {
-                            console.error('Image failed to load:', logoUrl);
-                            setLogoUrl('');
-                            localStorage.removeItem('agencyLogo');
-                          }}
-                        />
-                      ) : logoUploading ? (
-                        <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
-                      ) : (
-                        <div className="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500">
-                          <UploadCloud className="h-8 w-8" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <input
-                        ref={logoInputRef}
-                        id="agency-logo"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleLogoUpload}
-                        className="hidden"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => logoInputRef.current?.click()}
-                        disabled={logoUploading}
-                        className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-gray-100 transition-colors hover:bg-slate-50 dark:hover:bg-gray-700 disabled:opacity-60"
-                      >
-                        {logoUploading ? 'Uploading...' : 'Choose logo file'}
-                      </button>
-                      <p className="mt-1 text-xs text-slate-500 dark:text-gray-400">PNG, JPG, SVG up to 5MB</p>
-                    </div>
+                  <input
+                    ref={logoInputRef}
+                    id="agency-logo"
+                    type="file"
+                    accept="image/svg+xml,image/png,image/jpeg,image/jpg"
+                    onChange={handleLogoUpload}
+                    className="sr-only"
+                  />
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => !logoUploading && logoInputRef.current?.click()}
+                    onKeyDown={(e) => e.key === 'Enter' && !logoUploading && logoInputRef.current?.click()}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    onDragLeave={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (logoUploading) return;
+                      const file = e.dataTransfer.files?.[0];
+                      if (file) handleDropzoneFile(file);
+                    }}
+                    className="flex w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-8 text-center transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {logoUploading ? (
+                      <div className="flex flex-col items-center gap-2">
+                        <Loader2 className="h-12 w-12 animate-spin text-indigo-500" />
+                        <span className="text-sm font-medium text-slate-600 dark:text-gray-400">Uploading...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <UploadCloud className="mb-3 h-14 w-14 text-slate-400 dark:text-gray-500" />
+                        <p className="text-sm font-medium text-slate-700 dark:text-gray-300">
+                          Drag & drop your agency logos here
+                        </p>
+                        <p className="mt-1 text-xs text-slate-500 dark:text-gray-400">SVG, PNG, JPG</p>
+                      </>
+                    )}
                   </div>
+
+                  {agencyLogos.length > 0 && (
+                    <div className="mt-6 grid grid-cols-3 gap-4 sm:grid-cols-4">
+                      {agencyLogos.map((logo) => {
+                        const isSelected = logo.url === logoUrl;
+                        return (
+                          <button
+                            key={logo.url}
+                            type="button"
+                            onClick={() => handleSelectLogo(logo.url)}
+                            className={`relative flex aspect-square cursor-pointer items-center justify-center rounded-xl border p-2 transition-all hover:border-indigo-500 ${
+                              isSelected
+                                ? 'border-indigo-600 ring-2 ring-indigo-600 dark:border-indigo-500 dark:ring-indigo-500'
+                                : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950'
+                            }`}
+                          >
+                            <img
+                              src={logo.url}
+                              alt={logo.name}
+                              className="h-full w-full object-contain"
+                            />
+                            {isSelected && (
+                              <span className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-white">
+                                <Check className="h-3 w-3" strokeWidth={3} />
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
                 <button
                   type="button"
