@@ -180,6 +180,24 @@ export default function SettingsPage() {
     window.dispatchEvent(new Event('agency-settings-updated'));
   };
 
+  const handleDeleteLogo = async (e: React.MouseEvent, fileName: string) => {
+    e.stopPropagation();
+    const { error } = await supabase.storage.from('logos').remove([fileName]);
+    if (error) {
+      toast.error('Failed to delete logo');
+      console.error(error);
+      return;
+    }
+    toast.success('Logo deleted permanently');
+    setAgencyLogos((prev) => prev.filter((logo) => logo.name !== fileName));
+
+    if (logoUrl && logoUrl.includes(fileName)) {
+      setLogoUrl('');
+      localStorage.removeItem('agencyLogo');
+      window.dispatchEvent(new Event('agency-settings-updated'));
+    }
+  };
+
   function handleSaveAIConfig() {
     toast.success('AI Engine configuration securely saved! 🚀');
   }
@@ -413,33 +431,43 @@ export default function SettingsPage() {
 
                   {agencyLogos.length > 0 && (
                     <div className="mt-6 grid grid-cols-3 gap-4 sm:grid-cols-4">
-                      {agencyLogos.map((logo) => {
-                        const isSelected = logo.url === logoUrl;
-                        return (
+                      {agencyLogos.map((logo) => (
+                        <div
+                          key={logo.name}
+                          onClick={() => {
+                            setLogoUrl(logo.url);
+                            localStorage.setItem('agencyLogo', logo.url);
+                            window.dispatchEvent(new Event('agency-settings-updated'));
+                          }}
+                          className={`group relative flex aspect-square cursor-pointer items-center justify-center overflow-hidden rounded-xl border p-3 transition-all ${
+                            logoUrl === logo.url
+                              ? 'border-indigo-600 ring-2 ring-indigo-600/20 dark:border-indigo-500'
+                              : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-lg'
+                          }`}
+                        >
+                          <img
+                            src={logo.url}
+                            alt={logo.name}
+                            className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                            loading="lazy"
+                          />
+
+                          {logoUrl === logo.url && (
+                            <div className="absolute left-2 top-2 rounded-full bg-indigo-600 p-1 text-white shadow-sm">
+                              <Check className="h-3 w-3" strokeWidth={3} />
+                            </div>
+                          )}
+
                           <button
-                            key={logo.url}
                             type="button"
-                            onClick={() => handleSelectLogo(logo.url)}
-                            className={`relative flex aspect-square cursor-pointer items-center justify-center rounded-xl border p-2 transition-all hover:border-indigo-500 ${
-                              isSelected
-                                ? 'border-indigo-600 ring-2 ring-indigo-600 dark:border-indigo-500 dark:ring-indigo-500'
-                                : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950'
-                            }`}
+                            onClick={(e) => handleDeleteLogo(e, logo.name)}
+                            className="absolute right-2 top-2 z-10 rounded-lg bg-red-500 p-1.5 text-white shadow-sm opacity-0 transition-all duration-200 hover:bg-red-600 group-hover:opacity-100"
+                            title="Delete Logo"
                           >
-                            <img
-                              src={logo.url}
-                              alt={logo.name}
-                              className="h-full w-full object-contain p-2"
-                              loading="lazy"
-                            />
-                            {isSelected && (
-                              <span className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-white">
-                                <Check className="h-3 w-3" strokeWidth={3} />
-                              </span>
-                            )}
+                            <Trash2 className="h-4 w-4" />
                           </button>
-                        );
-                      })}
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -456,7 +484,7 @@ export default function SettingsPage() {
           )}
 
           {activeTab === 'team' && (
-            <div className="animate-in fade-in slide-in-from-bottom-2 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm duration-300 md:p-8">
+            <div className="animate-in fade-in slide-in-from-bottom-2 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm duration-300 md:p-8">
               <div className="mb-8 flex items-center gap-3">
                 <div className="rounded-xl bg-emerald-50 p-3 text-emerald-600">
                   <Users size={24} />
@@ -467,26 +495,26 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              <div className="mb-8 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 p-5">
+              <div className="mb-8 rounded-xl border border-gray-100 dark:border-gray-700/50 bg-gray-50 dark:bg-gray-800/50 p-5">
                 <h3 className="mb-3 flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-gray-100">
                   <UserPlus size={16} className="text-emerald-500" />
                   Invite New Member
                 </h3>
                 <div className="flex flex-col gap-4 md:flex-row md:items-center">
                   <div className="relative flex-1">
-                    <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" size={16} />
+                    <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={16} />
                     <input
                       type="email"
                       placeholder="colleague@agency.com"
                       value={inviteEmail}
                       onChange={(e) => setInviteEmail(e.target.value)}
-                      className="h-10 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 py-2.5 pl-9 pr-4 text-sm text-gray-900 dark:text-gray-100 shadow-sm outline-none transition-all placeholder-gray-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                      className="h-10 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 py-2.5 pl-9 pr-4 text-sm text-gray-900 dark:text-gray-100 shadow-sm outline-none transition-all placeholder-gray-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                     />
                   </div>
                   <select
                     value={inviteRole}
                     onChange={(e) => setInviteRole(e.target.value)}
-                    className="h-10 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2.5 text-sm text-gray-900 dark:text-gray-100 shadow-sm outline-none transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 md:w-40"
+                    className="h-10 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-3 py-2.5 text-sm text-gray-900 dark:text-gray-100 shadow-sm outline-none transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 md:w-40"
                   >
                     <option value="Admin">Admin</option>
                     <option value="Editor">Editor</option>
@@ -515,14 +543,14 @@ export default function SettingsPage() {
                   <Shield size={16} className="text-indigo-500" />
                   Active Members
                 </h3>
-                <div className="overflow-hidden divide-y divide-gray-100 dark:divide-gray-700 rounded-xl border border-gray-100 dark:border-gray-800">
+                <div className="overflow-hidden divide-y divide-gray-100 dark:divide-gray-800 rounded-xl border border-gray-100 dark:border-gray-800">
                   {teamMembers.map((member) => (
                     <div
                       key={member.id}
-                      className="flex items-center justify-between bg-white dark:bg-gray-900 p-4 transition-colors duration-150 hover:bg-gray-50/50 dark:hover:bg-gray-800/50"
+                      className="flex items-center justify-between p-4 transition-colors duration-150 hover:bg-gray-50/50 dark:hover:bg-gray-800/50"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full border border-indigo-100 bg-gradient-to-br from-indigo-50 to-purple-50 text-sm font-bold text-indigo-700">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full border border-indigo-100 dark:border-indigo-800 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/40 dark:to-purple-900/40 text-sm font-bold text-indigo-700 dark:text-indigo-300">
                           {(member.email || '@').charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -549,7 +577,7 @@ export default function SettingsPage() {
                         <button
                           type="button"
                           onClick={() => handleRemove(member.id)}
-                          className="rounded p-1 text-gray-400 transition-colors hover:text-red-600"
+                          className="rounded p-1 text-gray-400 dark:text-gray-500 transition-colors hover:text-red-600"
                           title="Remove Member"
                         >
                           <Trash2 size={16} />

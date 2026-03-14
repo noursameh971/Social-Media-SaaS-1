@@ -173,12 +173,12 @@ export default function AssetsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-950">
       <div className="space-y-6 p-6 lg:p-8">
         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-slate-900">Global Assets</h1>
-            <p className="mt-1 text-sm text-slate-500">
+            <h1 className="text-2xl font-semibold text-slate-900 dark:text-gray-100">Global Assets</h1>
+            <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">
               Manage and access brand assets, files, and media across all clients.
             </p>
           </div>
@@ -198,17 +198,17 @@ export default function AssetsPage() {
         {loading ? (
           <div className="flex items-center justify-center gap-3 py-24">
             <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-            <span className="text-sm text-slate-500">Loading assets...</span>
+            <span className="text-sm text-slate-500 dark:text-gray-400">Loading assets...</span>
           </div>
         ) : error ? (
-          <div className="rounded-xl border border-red-200 bg-red-50 px-6 py-4 text-sm text-red-700">
+          <div className="rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-900/30 px-6 py-4 text-sm text-red-700 dark:text-red-300">
             {error}
           </div>
         ) : assets.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-white py-24">
-            <FolderOpen className="h-14 w-14 text-slate-300" />
-            <h3 className="mt-4 text-lg font-semibold text-slate-900">No assets yet</h3>
-            <p className="mt-2 text-sm text-slate-500">Upload your first asset to get started.</p>
+          <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 py-24">
+            <FolderOpen className="h-14 w-14 text-slate-300 dark:text-gray-600" />
+            <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">No assets yet</h3>
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Upload your first asset to get started.</p>
             <button
               type="button"
               onClick={() => setModalOpen(true)}
@@ -228,13 +228,13 @@ export default function AssetsPage() {
                   placeholder="Search files..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 bg-white py-2 pl-9 pr-4 text-sm shadow-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 py-2 pl-9 pr-4 text-sm text-gray-900 dark:text-gray-100 shadow-sm outline-none transition-all placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
               <select
                 value={selectedClient}
                 onChange={(e) => setSelectedClient(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500 md:w-48"
+                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 shadow-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500 md:w-48"
               >
                 <option value="all">All Clients</option>
                 {uniqueClients.map((client) => (
@@ -248,10 +248,10 @@ export default function AssetsPage() {
               {filteredAssets.map((asset) => (
               <div
                 key={asset.id}
-                className="group flex flex-col overflow-hidden rounded-xl border border-gray-100 bg-white transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+                className="group flex flex-col overflow-hidden rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
               >
                 <div
-                  className={`relative h-40 w-full overflow-hidden bg-gray-100 ${isImage(asset.file_type) ? 'cursor-pointer' : 'flex items-center justify-center'}`}
+                  className={`relative h-40 w-full overflow-hidden bg-gray-100 dark:bg-gray-800 ${isImage(asset.file_type) ? 'cursor-pointer' : 'flex items-center justify-center'}`}
                   onClick={() => isImage(asset.file_type) && setPreviewAsset(asset)}
                 >
                   {isImage(asset.file_type) ? (
@@ -259,13 +259,13 @@ export default function AssetsPage() {
                       <img
                         src={asset.file_url}
                         alt={asset.file_name}
-                        className="h-full w-full border-b border-gray-50 object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="h-full w-full border-b border-gray-50 dark:border-gray-800 object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
                     </>
                   ) : (
-                    <div className="flex h-40 w-full items-center justify-center border-b border-gray-50">
-                      <File className="h-12 w-12 text-slate-400" />
+                    <div className="flex h-40 w-full items-center justify-center border-b border-gray-50 dark:border-gray-800">
+                      <File className="h-12 w-12 text-slate-400 dark:text-gray-500" />
                     </div>
                   )}
                   <button
@@ -292,14 +292,14 @@ export default function AssetsPage() {
                   <span className="w-fit rounded-md bg-indigo-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-indigo-700">
                     {getClientName(asset) || 'Unknown'}
                   </span>
-                  <p className="truncate font-medium text-gray-900" title={asset.file_name}>
+                  <p className="truncate font-medium text-gray-900 dark:text-gray-100" title={asset.file_name}>
                     {asset.file_name}
                   </p>
                   <a
                     href={asset.file_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-2 inline-flex w-fit items-center gap-1.5 text-sm font-medium text-gray-500 transition-colors hover:text-indigo-600"
+                    className="mt-2 inline-flex w-fit items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 transition-colors hover:text-indigo-600"
                   >
                     <Download className="h-4 w-4" />
                     Download
@@ -317,18 +317,18 @@ export default function AssetsPage() {
             onClick={() => setAssetToDelete(null)}
           >
             <div
-              className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-6 shadow-2xl"
+              className="w-full max-w-sm rounded-xl border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-lg font-bold text-slate-900">Delete Asset</h3>
-              <p className="mt-2 text-sm text-slate-500">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-gray-100">Delete Asset</h3>
+              <p className="mt-2 text-sm text-slate-500 dark:text-gray-400">
                 Are you sure you want to delete &quot;{assetToDelete.file_name}&quot;? This action cannot be undone.
               </p>
               <div className="mt-6 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setAssetToDelete(null)}
-                  className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                  className="rounded-lg border border-slate-200 dark:border-gray-700 px-4 py-2 text-sm font-medium text-slate-700 dark:text-gray-300 transition-colors hover:bg-slate-50 dark:hover:bg-gray-800"
                 >
                   Cancel
                 </button>
@@ -387,15 +387,15 @@ export default function AssetsPage() {
             onClick={() => !uploading && setModalOpen(false)}
           >
             <div
-              className="mx-4 w-full max-w-md rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl animate-in zoom-in-95 md:p-8"
+              className="mx-4 w-full max-w-md rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-2xl animate-in zoom-in-95 md:p-8"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-slate-900">Upload Asset</h2>
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-100">Upload Asset</h2>
                 <button
                   type="button"
                   onClick={() => !uploading && setModalOpen(false)}
-                  className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-lg p-1.5 text-slate-400 dark:text-gray-400 transition-colors hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-slate-600 dark:hover:text-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
                   disabled={uploading}
                 >
                   <X className="h-5 w-5" />
@@ -403,21 +403,21 @@ export default function AssetsPage() {
               </div>
               <form onSubmit={handleUpload} className="space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">Asset Name</label>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Asset Name</label>
                   <input
                     type="text"
                     value={form.name}
                     onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                     placeholder="Enter asset name"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-4 py-2.5 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">Client</label>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Client</label>
                   <select
                     value={form.client_id}
                     onChange={(e) => setForm((f) => ({ ...f, client_id: e.target.value }))}
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-4 py-2.5 text-gray-900 dark:text-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   >
                     <option value="" disabled>Select client</option>
                     {clients.map((c) => (
@@ -428,25 +428,25 @@ export default function AssetsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">File</label>
-                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/50 px-6 py-8 transition-colors hover:border-indigo-300 hover:bg-indigo-50/30 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20">
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">File</label>
+                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 px-6 py-8 transition-colors hover:border-indigo-300 dark:hover:border-indigo-600 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/20 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20">
                     <input
                       type="file"
                       onChange={(e) => setForm((f) => ({ ...f, file: e.target.files?.[0] ?? null }))}
                       className="sr-only outline-none focus:ring-0"
                     />
-                    <UploadCloud className="mb-2 h-10 w-10 text-gray-400" />
-                    <span className="text-sm font-medium text-gray-600">
+                    <UploadCloud className="mb-2 h-10 w-10 text-gray-400 dark:text-gray-500" />
+                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
                       {form.file ? form.file.name : 'Choose file or drag here'}
                     </span>
                   </label>
                 </div>
-                <div className="flex justify-end gap-3 border-t border-slate-100 pt-5">
+                <div className="flex justify-end gap-3 border-t border-slate-100 dark:border-gray-800 pt-5">
                   <button
                     type="button"
                     onClick={() => setModalOpen(false)}
                     disabled={uploading}
-                    className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="rounded-lg border border-slate-200 dark:border-gray-700 px-4 py-2 text-sm font-medium text-slate-700 dark:text-gray-300 transition-colors hover:bg-slate-50 dark:hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     Cancel
                   </button>

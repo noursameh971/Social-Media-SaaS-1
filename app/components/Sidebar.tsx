@@ -120,24 +120,30 @@ export default function Sidebar() {
       >
       <div className="flex h-full flex-col">
         <div className="flex h-16 items-center justify-between gap-3 border-b border-slate-800 px-6">
-          <div className="flex min-w-0 flex-1 items-center gap-3">
+          <Link
+            href="/"
+            onClick={closeSidebar}
+            className="flex min-w-0 flex-1 items-center gap-3 px-2 py-1 transition-opacity hover:opacity-80 cursor-pointer"
+          >
             {globalLogo && !logoError ? (
-              <div className="h-8 w-[120px] shrink-0">
+              <div className="relative flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-gray-800 to-gray-950 shadow-lg">
                 <img
                   key={globalLogo}
                   src={globalLogo}
                   alt="Agency Logo"
-                  className="h-full w-full object-contain"
+                  className="h-full w-full object-cover"
                   onError={() => setLogoError(true)}
                 />
               </div>
             ) : (
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-700/80 text-slate-300">
-                <span className="text-sm font-bold">{globalAgencyName.charAt(0).toUpperCase() || "B"}</span>
+              <div className="relative flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-gray-800 to-gray-950 shadow-lg">
+                <span className="text-sm font-bold text-white">{globalAgencyName.charAt(0).toUpperCase() || "B"}</span>
               </div>
             )}
-            <span className="truncate text-xl font-semibold text-white">{globalAgencyName}</span>
-          </div>
+            <span className="truncate text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+              {globalAgencyName}
+            </span>
+          </Link>
           <button
             type="button"
             onClick={closeSidebar}
