@@ -84,6 +84,10 @@ export default function Sidebar() {
     setLogoError(false);
   }, [globalLogo]);
 
+  useEffect(() => {
+    console.log('FINAL_LOGO_URL:', globalLogo);
+  }, [globalLogo]);
+
   const closeSidebar = () => setIsOpen(false);
 
   return (
@@ -120,6 +124,7 @@ export default function Sidebar() {
             {globalLogo && !logoError ? (
               <div className="h-8 w-[120px] shrink-0">
                 <img
+                  key={globalLogo}
                   src={globalLogo}
                   alt="Agency Logo"
                   className="h-full w-full object-contain"

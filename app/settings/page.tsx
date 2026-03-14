@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useTheme } from 'next-themes';
 import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabase';
 import { User, Briefcase, Bell, Save, Bot, Key, Sparkles, Building2, UploadCloud, Globe, Users, Mail, Shield, Trash2, UserPlus, Moon, Sun, Loader2 } from 'lucide-react';
@@ -27,20 +28,15 @@ export default function SettingsPage() {
   const [website, setWebsite] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
 
-  const [notifications, setNotifications] = useState({
-    emailAlertsTasks: false,
-    weeklyAnalyticsReport: false,
-    clientUpdates: false,
-  });
-  const [darkMode, setDarkMode] = useState(false);
+  const [emailTasks, setEmailTasks] = useState(false);
+  const [weeklyReport, setWeeklyReport] = useState(false);
+  const [clientUpdates, setClientUpdates] = useState(false);
+  const { setTheme, resolvedTheme } = useTheme();
   const [logoUploading, setLogoUploading] = useState(false);
   const [logoError, setLogoError] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
-  const [teamMembers, setTeamMembers] = useState([
-    { id: 1, name: 'Agency Admin (You)', email: 'admin@agency.com', role: 'Admin' },
-    { id: 2, name: 'Sarah (Designer)', email: 'sarah@agency.com', role: 'Editor' },
-  ]);
+  const [teamMembers, setTeamMembers] = useState<{ id: string; email: string; role: string; status?: string }[]>([]);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('Editor');
   const [isInviting, setIsInviting] = useState(false);
@@ -58,9 +54,6 @@ export default function SettingsPage() {
       setWebsite(localStorage.getItem('agencyWebsite') || '');
       setLogoUrl(localStorage.getItem('agencyLogo') || '');
 
-      const theme = localStorage.getItem('theme');
-      setDarkMode(theme === 'dark');
-
       const savedProfile = localStorage.getItem('profileSettings');
       if (savedProfile) {
         try {
@@ -71,15 +64,9 @@ export default function SettingsPage() {
         }
       }
 
-      const savedNotifications = localStorage.getItem('notificationSettings');
-      if (savedNotifications) {
-        try {
-          const parsed = JSON.parse(savedNotifications);
-          setNotifications((n) => ({ ...n, ...parsed }));
-        } catch {
-          /* ignore */
-        }
-      }
+      setEmailTasks(localStorage.getItem('notifyEmailTasks') === 'true');
+      setWeeklyReport(localStorage.getItem('notifyWeeklyReport') === 'true');
+      setClientUpdates(localStorage.getItem('notifyClientUpdates') === 'true');
     }
   }, []);
 
@@ -89,6 +76,22 @@ export default function SettingsPage() {
     return () => clearTimeout(t);
   }, [saveToast]);
 
+  useEffect(() => {
+    console.log('FINAL_LOGO_URL:', logoUrl);
+  }, [logoUrl]);
+
+  async function fetchTeamMembers() {
+    const { data, error } = await supabase
+      .from('team_members')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (!error) setTeamMembers((data ?? []) as { id: string; email: string; role: string; status?: string }[]);
+  }
+
+  useEffect(() => {
+    fetchTeamMembers();
+  }, []);
+
   const handleSaveProfile = () => {
     localStorage.setItem('profileSettings', JSON.stringify(profile));
     setSaveToast(true);
@@ -96,18 +99,16 @@ export default function SettingsPage() {
   };
 
   const handleSaveNotifications = () => {
-    localStorage.setItem('notificationSettings', JSON.stringify(notifications));
-    window.dispatchEvent(new Event('agency-settings-updated'));
-    toast.success('Notification preferences saved! 🔔');
+    localStorage.setItem('notifyEmailTasks', String(emailTasks));
+    localStorage.setItem('notifyWeeklyReport', String(weeklyReport));
+    localStorage.setItem('notifyClientUpdates', String(clientUpdates));
+    toast.success('Preferences saved successfully');
   };
 
   const handleDarkModeToggle = () => {
-    const next = !darkMode;
-    setDarkMode(next);
-    localStorage.setItem('theme', next ? 'dark' : 'light');
-    document.documentElement.classList.toggle('dark', next);
-    window.dispatchEvent(new Event('theme-updated'));
-    toast.success(next ? 'Dark mode enabled 🌙' : 'Light mode enabled ☀️');
+    const nextTheme = resolvedTheme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    toast.success(nextTheme === 'dark' ? 'Dark mode enabled 🌙' : 'Light mode enabled ☀️');
   };
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,9 +124,12 @@ export default function SettingsPage() {
       const { data, error } = await supabase.storage.from('logos').upload(fileName, file);
       if (error) throw error;
 
-      const filePath = data?.path ?? fileName;
-      const { data: { publicUrl } } = supabase.storage.from('logos').getPublicUrl(filePath);
-      setLogoUrl(publicUrl);
+      const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/logos/${fileName}`;
+      console.log('Generated Public URL:', publicUrl);
+      setLogoUrl(publicUrl); // Force state update
+      localStorage.setItem('agencyLogo', publicUrl); // Save to local storage
+      // Trigger event to update Sidebar immediately
+      window.dispatchEvent(new Event('agency-settings-updated'));
       setLogoError(false);
       toast.success('Logo uploaded! Click Save to apply.', { id: toastId });
     } catch (err) {
@@ -154,6 +158,7 @@ export default function SettingsPage() {
       toast.error('Please enter an email address.');
       return;
     }
+    const toastId = toast.loading('Sending invitation...');
     setIsInviting(true);
     try {
       const res = await fetch('/api/invite', {
@@ -163,23 +168,32 @@ export default function SettingsPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Failed to send invitation');
-      setInviteEmail('');
-      setTeamMembers((prev) => [
-        ...prev,
-        { id: Date.now(), name: 'Pending Invite...', email, role: inviteRole },
+
+      const { error: insertError } = await supabase.from('team_members').insert([
+        { email, role: inviteRole, status: 'Pending' },
       ]);
-      toast.success('Invitation sent to email! 📧');
+      if (insertError) throw insertError;
+
+      setInviteEmail('');
+      await fetchTeamMembers();
+      toast.success('Invitation sent to email! 📧', { id: toastId });
     } catch (err) {
       console.error('Invite error:', err);
-      toast.error(err instanceof Error ? err.message : 'Failed to send invitation');
+      toast.error(err instanceof Error ? err.message : 'Failed to send invitation', { id: toastId });
     } finally {
       setIsInviting(false);
     }
   }
 
-  function handleRemove(id: number) {
-    setTeamMembers((prev) => prev.filter((m) => m.id !== id));
-    toast.success('Member removed from workspace 🗑️');
+  async function handleRemove(memberId: string) {
+    try {
+      const { error } = await supabase.from('team_members').delete().eq('id', memberId);
+      if (error) throw error;
+      await fetchTeamMembers();
+      toast.success('Member removed');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to remove member');
+    }
   }
 
   return (
@@ -312,18 +326,18 @@ export default function SettingsPage() {
                     Logo
                   </label>
                   <div className="flex items-center gap-4">
-                    <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-gray-300 bg-gray-50">
-                      {logoUrl && !logoError && !logoUploading ? (
+                    <div className="mb-4 flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-gray-200 bg-gray-50">
+                      {logoUrl ? (
                         <img
                           src={logoUrl}
-                          alt="Logo Preview"
-                          className="h-full w-full object-contain rounded-xl"
-                          onError={() => setLogoError(true)}
+                          alt="Agency Logo"
+                          className="h-full w-full object-contain p-2"
+                          onError={() => {
+                            console.error('Image load error, resetting URL');
+                          }}
                         />
-                      ) : logoUploading ? (
-                        <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
                       ) : (
-                        <UploadCloud size={24} className="text-gray-400" />
+                        <UploadCloud className="h-8 w-8 text-gray-400" />
                       )}
                     </div>
                     <div className="flex-1">
@@ -427,11 +441,15 @@ export default function SettingsPage() {
                     >
                       <div className="flex items-center gap-4">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full border border-indigo-100 bg-gradient-to-br from-indigo-50 to-purple-50 text-sm font-bold text-indigo-700">
-                          {member.name.charAt(0)}
+                          {(member.email || '@').charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-gray-900">{member.name}</p>
-                          <p className="text-xs text-gray-500">{member.email}</p>
+                          <p className="text-sm font-bold text-gray-900">
+                            {member.email}
+                            {member.status === 'Pending' && (
+                              <span className="ml-1.5 text-xs font-normal text-gray-500">(Pending)</span>
+                            )}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
@@ -544,28 +562,28 @@ export default function SettingsPage() {
                 Choose how you want to be notified and customize appearance.
               </p>
 
-              <div className="mt-6 border-b border-slate-200 pb-6">
-                <h3 className="mb-3 text-sm font-semibold text-slate-800">Appearance</h3>
+              <div className="mt-6 border-b border-slate-200 pb-6 dark:border-slate-600">
+                <h3 className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-200">Appearance</h3>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    {darkMode ? <Moon className="h-5 w-5 text-indigo-600" /> : <Sun className="h-5 w-5 text-amber-500" />}
+                    {resolvedTheme === 'dark' ? <Moon className="h-5 w-5 text-indigo-600" /> : <Sun className="h-5 w-5 text-amber-500" />}
                     <div>
-                      <p className="text-sm font-medium text-slate-700">Dark Mode (Night Mode)</p>
-                      <p className="text-xs text-slate-500">Switch between light and dark theme</p>
+                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Dark Mode (Night Mode)</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Switch between light and dark theme</p>
                     </div>
                   </div>
                   <button
                     type="button"
                     role="switch"
-                    aria-checked={darkMode}
+                    aria-checked={resolvedTheme === 'dark'}
                     onClick={handleDarkModeToggle}
                     className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
-                      darkMode ? 'bg-indigo-600' : 'bg-slate-200'
+                      resolvedTheme === 'dark' ? 'bg-indigo-600' : 'bg-slate-200'
                     }`}
                   >
                     <span
                       className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition ${
-                        darkMode ? 'translate-x-5' : 'translate-x-1'
+                        resolvedTheme === 'dark' ? 'translate-x-5' : 'translate-x-1'
                       }`}
                     />
                   </button>
@@ -573,66 +591,66 @@ export default function SettingsPage() {
               </div>
 
               <div className="mt-6 space-y-6">
-                <h3 className="text-sm font-semibold text-slate-800">Notifications</h3>
+                <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Notifications</h3>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-slate-700">Email Alerts for Tasks</p>
-                    <p className="text-xs text-slate-500">Get notified when tasks are assigned or updated</p>
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Email Alerts for Tasks</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Get notified when tasks are assigned or updated</p>
                   </div>
                   <button
                     type="button"
                     role="switch"
-                    aria-checked={notifications.emailAlertsTasks}
-                    onClick={() => setNotifications((n) => ({ ...n, emailAlertsTasks: !n.emailAlertsTasks }))}
+                    aria-checked={emailTasks}
+                    onClick={() => setEmailTasks((prev) => !prev)}
                     className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
-                      notifications.emailAlertsTasks ? 'bg-indigo-600' : 'bg-slate-200'
+                      emailTasks ? 'bg-indigo-600' : 'bg-slate-200'
                     }`}
                   >
                     <span
                       className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition ${
-                        notifications.emailAlertsTasks ? 'translate-x-5' : 'translate-x-1'
+                        emailTasks ? 'translate-x-5' : 'translate-x-1'
                       }`}
                     />
                   </button>
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-slate-700">Weekly Analytics Report</p>
-                    <p className="text-xs text-slate-500">Receive a summary every Monday</p>
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Weekly Analytics Report</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Receive a summary every Monday</p>
                   </div>
                   <button
                     type="button"
                     role="switch"
-                    aria-checked={notifications.weeklyAnalyticsReport}
-                    onClick={() => setNotifications((n) => ({ ...n, weeklyAnalyticsReport: !n.weeklyAnalyticsReport }))}
+                    aria-checked={weeklyReport}
+                    onClick={() => setWeeklyReport((prev) => !prev)}
                     className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
-                      notifications.weeklyAnalyticsReport ? 'bg-indigo-600' : 'bg-slate-200'
+                      weeklyReport ? 'bg-indigo-600' : 'bg-slate-200'
                     }`}
                   >
                     <span
                       className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition ${
-                        notifications.weeklyAnalyticsReport ? 'translate-x-5' : 'translate-x-1'
+                        weeklyReport ? 'translate-x-5' : 'translate-x-1'
                       }`}
                     />
                   </button>
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-slate-700">Client Updates</p>
-                    <p className="text-xs text-slate-500">Get notified when clients add or update content</p>
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Client Updates</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Get notified when clients add or update content</p>
                   </div>
                   <button
                     type="button"
                     role="switch"
-                    aria-checked={notifications.clientUpdates}
-                    onClick={() => setNotifications((n) => ({ ...n, clientUpdates: !n.clientUpdates }))}
+                    aria-checked={clientUpdates}
+                    onClick={() => setClientUpdates((prev) => !prev)}
                     className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
-                      notifications.clientUpdates ? 'bg-indigo-600' : 'bg-slate-200'
+                      clientUpdates ? 'bg-indigo-600' : 'bg-slate-200'
                     }`}
                   >
                     <span
                       className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition ${
-                        notifications.clientUpdates ? 'translate-x-5' : 'translate-x-1'
+                        clientUpdates ? 'translate-x-5' : 'translate-x-1'
                       }`}
                     />
                   </button>

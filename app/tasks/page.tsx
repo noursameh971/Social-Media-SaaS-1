@@ -42,7 +42,7 @@ export default function TasksPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [isBreakingDown, setIsBreakingDown] = useState<string | null>(null);
@@ -89,22 +89,22 @@ export default function TasksPage() {
   async function fetchTasks() {
     const { data, error } = await supabase
       .from('tasks')
-      .select('id, title, description, status, client_id, due_date, created_at, clients(name)')
+      .select('*, clients(name)')
       .order('created_at', { ascending: false });
     if (!error) setTasks((data ?? []) as Task[]);
   }
 
   async function fetchClients() {
     const { data, error } = await supabase.from('clients').select('id, name').order('name');
-    if (!error) setClients(data ?? []);
+    if (!error) setClients((data ?? []) as Client[]);
   }
 
   async function fetchAll() {
-    setLoading(true);
+    setIsLoading(true);
     try {
       await Promise.all([fetchTasks(), fetchClients()]);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }
 
@@ -127,7 +127,9 @@ export default function TasksPage() {
 
     if (error) {
       toast.error('Failed to move task');
-      await fetchTasks();
+      await fetchAll();
+    } else {
+      toast.success('Task updated');
     }
   };
 
@@ -139,12 +141,14 @@ export default function TasksPage() {
     }
     setSaving(true);
     try {
-      const { error } = await supabase.from('tasks').insert({
-        title: form.title.trim(),
-        status: 'todo',
-        client_id: form.client_id,
-        due_date: form.due_date?.trim() ? form.due_date : null,
-      });
+      const { error } = await supabase.from('tasks').insert([
+        {
+          title: form.title.trim(),
+          status: 'todo',
+          client_id: form.client_id,
+          due_date: form.due_date?.trim() ? form.due_date : null,
+        },
+      ]);
       if (error) {
         console.error('Supabase Error:', error);
         toast.error('Error: ' + error.message);
@@ -152,7 +156,7 @@ export default function TasksPage() {
       }
       setModalOpen(false);
       setForm({ title: '', client_id: '', due_date: '' });
-      await fetchTasks();
+      await fetchAll();
       toast.success('Task created!');
     } catch (err) {
       console.error('Create task error:', err);
@@ -187,7 +191,7 @@ export default function TasksPage() {
       if (deleteError) throw deleteError;
 
       toast.success('Task broken down magically! ✨');
-      await fetchTasks();
+      await fetchAll();
     } catch (err) {
       console.error('Breakdown error:', err);
       toast.error(err instanceof Error ? err.message : 'Failed to break down task');
@@ -205,7 +209,7 @@ export default function TasksPage() {
         .eq('id', taskToEdit.id);
       if (error) throw error;
       toast.success('Task updated!');
-      await fetchTasks();
+      await fetchAll();
       setTaskToEdit(null);
     } catch (err) {
       console.error('Update task error:', err);
@@ -219,7 +223,7 @@ export default function TasksPage() {
       const { error } = await supabase.from('tasks').delete().eq('id', taskToDelete.id);
       if (error) throw error;
       toast.success('Task deleted!');
-      await fetchTasks();
+      await fetchAll();
       setTaskToDelete(null);
     } catch (err) {
       console.error('Delete task error:', err);
@@ -255,7 +259,7 @@ export default function TasksPage() {
           </button>
         </header>
 
-        {loading ? (
+        {isLoading ? (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {[1, 2, 3].map((i) => (
               <div key={i} className="flex min-h-[400px] flex-col rounded-2xl border border-gray-100 bg-gray-50/50 p-4">
