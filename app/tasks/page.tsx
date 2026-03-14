@@ -239,12 +239,12 @@ export default function TasksPage() {
   if (!isMounted) return null;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-950 transition-colors duration-200">
       <div className="space-y-6 p-6 lg:p-8">
         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-slate-900">Tasks</h1>
-            <p className="mt-1 text-sm text-slate-500">Manage tasks across all clients</p>
+            <h1 className="text-2xl font-semibold text-slate-900 dark:text-gray-100">Tasks</h1>
+            <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">Manage tasks across all clients</p>
           </div>
           <button
             type="button"
@@ -262,14 +262,14 @@ export default function TasksPage() {
         {isLoading ? (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="flex min-h-[400px] flex-col rounded-2xl border border-gray-100 bg-gray-50/50 p-4">
+              <div key={i} className="flex min-h-[400px] flex-col rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 p-4">
                 <div className="mb-4 flex items-center gap-2">
                   <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
                   <span className="text-sm text-slate-500">Loading...</span>
                 </div>
                 <div className="space-y-3">
                   {[1, 2, 3].map((j) => (
-                    <div key={j} className="h-24 animate-pulse rounded-xl border border-gray-100 bg-white" />
+                    <div key={j} className="h-24 animate-pulse rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900" />
                   ))}
                 </div>
               </div>
@@ -285,13 +285,13 @@ export default function TasksPage() {
                   placeholder="Search tasks..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-4 text-sm shadow-sm outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 pl-9 pr-4 text-sm text-gray-900 dark:text-gray-100 shadow-sm outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 dark:placeholder-gray-500"
                 />
               </div>
               <select
                 value={selectedClient}
                 onChange={(e) => setSelectedClient(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:ring-2 focus:ring-indigo-500 md:w-48"
+                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 shadow-sm outline-none focus:ring-2 focus:ring-indigo-500 md:w-48"
               >
                 <option value="all">All Clients</option>
                 {uniqueClients.map((client) => (
@@ -306,7 +306,7 @@ export default function TasksPage() {
               {STATUSES.map((status) => (
                 <div
                   key={status}
-                  className="flex min-h-[400px] flex-col overflow-hidden rounded-2xl border border-gray-100"
+                  className="flex min-h-[400px] flex-col overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-800"
                 >
                   <div className={`flex items-center justify-between ${COLUMN_HEADER_BG[status]}`}>
                     <div className="flex items-center gap-2">
@@ -315,7 +315,7 @@ export default function TasksPage() {
                         {STATUS_LABELS[status]}
                       </h2>
                     </div>
-                    <span className="rounded-full border border-gray-200 bg-white px-2 py-1 text-xs text-gray-500 shadow-sm">
+                    <span className="rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-2 py-1 text-xs text-gray-500 dark:text-gray-400 shadow-sm">
                       {tasksByStatus[status].length}
                     </span>
                   </div>
@@ -325,8 +325,8 @@ export default function TasksPage() {
                       <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        className={`flex flex-1 flex-col gap-3 rounded-b-xl bg-gray-50/30 p-2 ${
-                          snapshot.isDraggingOver ? 'bg-gray-100/50' : ''
+                        className={`flex flex-1 flex-col gap-3 rounded-b-xl bg-gray-50/30 dark:bg-gray-900/30 p-2 ${
+                          snapshot.isDraggingOver ? 'bg-gray-100/50 dark:bg-gray-800/50' : ''
                         }`}
                       >
                         {tasksByStatus[status].map((task, index) => (
@@ -343,7 +343,7 @@ export default function TasksPage() {
                                 }`}
                               >
                                 <div
-                                  className="absolute right-2 top-2 z-10 flex items-center gap-1 rounded-lg border border-gray-100 bg-white/90 p-1 shadow-sm backdrop-blur-sm opacity-0 transition-opacity group-hover:opacity-100"
+                                  className="absolute right-2 top-2 z-10 flex items-center gap-1 rounded-lg border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800/90 p-1 shadow-sm backdrop-blur-sm opacity-0 transition-opacity group-hover:opacity-100"
                                   onClick={(e) => e.stopPropagation()}
                                   onPointerDown={(e) => e.stopPropagation()}
                                 >
@@ -378,7 +378,7 @@ export default function TasksPage() {
                                       </span>
                                     )}
                                     {task.due_date && (
-                                      <span className="text-xs text-slate-500">
+                                      <span className="text-xs text-slate-500 dark:text-gray-400">
                                         {new Date(task.due_date).toLocaleDateString('en-US', {
                                           month: 'short',
                                           day: 'numeric',
@@ -410,7 +410,7 @@ export default function TasksPage() {
                         {provided.placeholder}
 
                         {tasksByStatus[status].length === 0 && !snapshot.isDraggingOver && (
-                          <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-8 text-center text-gray-400">
+                          <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 p-8 text-center text-gray-400 dark:text-gray-500">
                             <ListTodo className="h-10 w-10" />
                             <p className="mt-2 text-sm italic">No tasks</p>
                           </div>
@@ -427,33 +427,33 @@ export default function TasksPage() {
 
         {modalOpen && (
           <div
-            className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-gray-900/40 p-4 backdrop-blur-sm fade-in duration-200"
+            className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-gray-900/40 dark:bg-black/60 p-4 backdrop-blur-sm fade-in duration-200"
             onClick={() => setModalOpen(false)}
           >
             <div
-              className="mx-4 w-full max-w-md rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl animate-in zoom-in-95 duration-200 md:p-8"
+              className="mx-4 w-full max-w-md rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-2xl animate-in zoom-in-95 duration-200 md:p-8"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-slate-900">Add Task</h2>
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-100">Add Task</h2>
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                  className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-slate-600 dark:hover:text-gray-300"
                 >
                   <X className="h-5 w-5" />
                 </button>
               </div>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">Task Title</label>
+                  <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-400">Task Title</label>
                   <input
                     type="text"
                     required
                     value={form.title}
                     onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                     placeholder="Enter task title"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 placeholder-slate-400 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 placeholder-slate-400 dark:placeholder-gray-500 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <div>
@@ -472,19 +472,19 @@ export default function TasksPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">Due Date</label>
+                  <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-400">Due Date</label>
                   <input
                     type="date"
                     value={form.due_date}
                     onChange={(e) => setForm((f) => ({ ...f, due_date: e.target.value }))}
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
-                <div className="flex justify-end gap-3 border-t border-slate-100 pt-5">
+                <div className="flex justify-end gap-3 border-t border-slate-100 dark:border-gray-800 pt-5">
                   <button
                     type="button"
                     onClick={() => setModalOpen(false)}
-                    className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                    className="rounded-lg border border-slate-200 dark:border-gray-700 px-4 py-2 text-sm font-medium text-slate-700 dark:text-gray-300 transition-colors hover:bg-slate-50 dark:hover:bg-gray-800"
                   >
                     Cancel
                   </button>
@@ -510,25 +510,25 @@ export default function TasksPage() {
 
         {taskToEdit && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 dark:bg-black/60 p-4 backdrop-blur-sm"
             onClick={() => setTaskToEdit(null)}
           >
             <div
-              className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-2xl"
+              className="w-full max-w-md rounded-xl border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="mb-4 text-lg font-semibold text-slate-900">Edit Task</h3>
+              <h3 className="mb-4 text-lg font-semibold text-slate-900 dark:text-gray-100">Edit Task</h3>
               <input
                 type="text"
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 p-2 text-slate-900 focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-2 text-slate-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500"
               />
               <div className="mt-6 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setTaskToEdit(null)}
-                  className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                  className="rounded-lg border border-slate-200 dark:border-gray-700 px-4 py-2 text-sm font-medium text-slate-700 dark:text-gray-300 transition-colors hover:bg-slate-50 dark:hover:bg-gray-800"
                 >
                   Cancel
                 </button>
@@ -546,22 +546,22 @@ export default function TasksPage() {
 
         {taskToDelete && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 dark:bg-black/60 p-4 backdrop-blur-sm"
             onClick={() => setTaskToDelete(null)}
           >
             <div
-              className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-2xl"
+              className="w-full max-w-md rounded-xl border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="mb-2 text-lg font-semibold text-slate-900">Delete Task</h3>
-              <p className="mb-6 text-sm text-slate-500">
+              <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-gray-100">Delete Task</h3>
+              <p className="mb-6 text-sm text-slate-500 dark:text-gray-400">
                 Are you sure you want to delete this task?
               </p>
               <div className="flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setTaskToDelete(null)}
-                  className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                  className="rounded-lg border border-slate-200 dark:border-gray-700 px-4 py-2 text-sm font-medium text-slate-700 dark:text-gray-300 transition-colors hover:bg-slate-50 dark:hover:bg-gray-800"
                 >
                   Cancel
                 </button>

@@ -121,14 +121,15 @@ export default function SettingsPage() {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
 
-      const { data, error } = await supabase.storage.from('logos').upload(fileName, file);
-      if (error) throw error;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('logos')
+        .upload(fileName, file, { upsert: true });
+      if (uploadError) throw uploadError;
 
-      const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/logos/${fileName}`;
-      console.log('Generated Public URL:', publicUrl);
-      setLogoUrl(publicUrl); // Force state update
-      localStorage.setItem('agencyLogo', publicUrl); // Save to local storage
-      // Trigger event to update Sidebar immediately
+      const { data: { publicUrl } } = supabase.storage.from('logos').getPublicUrl(uploadData.path);
+
+      setLogoUrl(publicUrl);
+      localStorage.setItem('agencyLogo', publicUrl);
       window.dispatchEvent(new Event('agency-settings-updated'));
       setLogoError(false);
       toast.success('Logo uploaded! Click Save to apply.', { id: toastId });
@@ -206,7 +207,7 @@ export default function SettingsPage() {
       </header>
 
       {saveToast && (
-        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-medium text-emerald-800 shadow-sm">
+        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/30 px-5 py-3 text-sm font-medium text-emerald-800 dark:text-emerald-200 shadow-sm">
           Changes saved successfully!
         </div>
       )}
@@ -223,8 +224,8 @@ export default function SettingsPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex shrink-0 items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium transition-colors lg:w-full ${
                   isActive
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                    : 'text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-slate-900 dark:hover:text-gray-100'
                 }`}
               >
                 <Icon className="h-4 w-4 shrink-0" />
@@ -236,14 +237,14 @@ export default function SettingsPage() {
 
         <div className="space-y-6">
           {activeTab === 'profile' && (
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm md:p-8">
-              <h2 className="text-lg font-semibold text-slate-900">Profile</h2>
-              <p className="mt-1 text-sm text-slate-500">
+            <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm md:p-8">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-100">Profile</h2>
+              <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">
                 Your personal information.
               </p>
               <div className="mt-6 space-y-4">
                 <div>
-                  <label htmlFor="first-name" className="mb-1.5 block text-sm font-medium text-slate-700">
+                  <label htmlFor="first-name" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-400">
                     First Name
                   </label>
                   <input
@@ -252,11 +253,11 @@ export default function SettingsPage() {
                     value={profile.firstName}
                     onChange={(e) => setProfile((p) => ({ ...p, firstName: e.target.value }))}
                     placeholder="Enter first name"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 transition-all placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 transition-all placeholder-slate-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <div>
-                  <label htmlFor="last-name" className="mb-1.5 block text-sm font-medium text-slate-700">
+                  <label htmlFor="last-name" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-400">
                     Last Name
                   </label>
                   <input
@@ -265,11 +266,11 @@ export default function SettingsPage() {
                     value={profile.lastName}
                     onChange={(e) => setProfile((p) => ({ ...p, lastName: e.target.value }))}
                     placeholder="Enter last name"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 transition-all placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 transition-all placeholder-slate-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <div>
-                  <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-700">
+                  <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-400">
                     Email Address
                   </label>
                   <input
@@ -278,7 +279,7 @@ export default function SettingsPage() {
                     value={profile.email}
                     onChange={(e) => setProfile((p) => ({ ...p, email: e.target.value }))}
                     placeholder="e.g. you@agency.com"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 transition-all placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 transition-all placeholder-slate-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
               </div>
@@ -286,9 +287,9 @@ export default function SettingsPage() {
           )}
 
           {activeTab === 'agency' && (
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm md:p-8">
-              <h2 className="text-lg font-semibold text-slate-900">Agency Branding</h2>
-              <p className="mt-1 text-sm text-slate-500">
+            <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm md:p-8">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-100">Agency Branding</h2>
+              <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">
                 White-label your agency with custom logo and branding.
               </p>
               <div className="mt-6 space-y-4">
@@ -303,11 +304,11 @@ export default function SettingsPage() {
                     value={agencyName}
                     onChange={(e) => setAgencyName(e.target.value)}
                     placeholder="Enter agency name"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 transition-all placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 transition-all placeholder-slate-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <div>
-                  <label htmlFor="agency-website" className="mb-1.5 flex items-center gap-2 text-sm font-medium text-slate-700">
+                  <label htmlFor="agency-website" className="mb-1.5 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-gray-400">
                     <Globe className="h-4 w-4" />
                     Website
                   </label>
@@ -317,27 +318,33 @@ export default function SettingsPage() {
                     value={website}
                     onChange={(e) => setWebsite(e.target.value)}
                     placeholder="https://"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 transition-all placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 transition-all placeholder-slate-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <div>
-                  <label htmlFor="agency-logo" className="mb-1.5 flex items-center gap-2 text-sm font-medium text-slate-700">
+                  <label htmlFor="agency-logo" className="mb-1.5 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-gray-400">
                     <UploadCloud className="h-4 w-4" />
                     Logo
                   </label>
                   <div className="flex items-center gap-4">
-                    <div className="mb-4 flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-gray-200 bg-gray-50">
+                    <div className="mb-4 flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                       {logoUrl ? (
                         <img
                           src={logoUrl}
                           alt="Agency Logo"
-                          className="h-full w-full object-contain p-2"
+                          className="h-full w-full object-contain p-1"
                           onError={() => {
-                            console.error('Image load error, resetting URL');
+                            console.error('Image failed to load:', logoUrl);
+                            setLogoUrl('');
+                            localStorage.removeItem('agencyLogo');
                           }}
                         />
+                      ) : logoUploading ? (
+                        <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
                       ) : (
-                        <UploadCloud className="h-8 w-8 text-gray-400" />
+                        <div className="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500">
+                          <UploadCloud className="h-8 w-8" />
+                        </div>
                       )}
                     </div>
                     <div className="flex-1">
@@ -353,11 +360,11 @@ export default function SettingsPage() {
                         type="button"
                         onClick={() => logoInputRef.current?.click()}
                         disabled={logoUploading}
-                        className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-60"
+                        className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-gray-100 transition-colors hover:bg-slate-50 dark:hover:bg-gray-700 disabled:opacity-60"
                       >
                         {logoUploading ? 'Uploading...' : 'Choose logo file'}
                       </button>
-                      <p className="mt-1 text-xs text-slate-500">PNG, JPG, SVG up to 5MB</p>
+                      <p className="mt-1 text-xs text-slate-500 dark:text-gray-400">PNG, JPG, SVG up to 5MB</p>
                     </div>
                   </div>
                 </div>
@@ -380,13 +387,13 @@ export default function SettingsPage() {
                   <Users size={24} />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">Team Workspace</h2>
-                  <p className="text-sm text-gray-500">Manage your agency members and their access levels.</p>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Team Workspace</h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Manage your agency members and their access levels.</p>
                 </div>
               </div>
 
-              <div className="mb-8 rounded-xl border border-gray-100 bg-gray-50/50 p-5">
-                <h3 className="mb-3 flex items-center gap-2 text-sm font-bold text-gray-900">
+              <div className="mb-8 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 p-5">
+                <h3 className="mb-3 flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-gray-100">
                   <UserPlus size={16} className="text-emerald-500" />
                   Invite New Member
                 </h3>
@@ -398,13 +405,13 @@ export default function SettingsPage() {
                       placeholder="colleague@agency.com"
                       value={inviteEmail}
                       onChange={(e) => setInviteEmail(e.target.value)}
-                      className="h-10 w-full rounded-lg border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm shadow-sm outline-none transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                      className="h-10 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 py-2.5 pl-9 pr-4 text-sm text-gray-900 dark:text-gray-100 shadow-sm outline-none transition-all placeholder-gray-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                     />
                   </div>
                   <select
                     value={inviteRole}
                     onChange={(e) => setInviteRole(e.target.value)}
-                    className="h-10 w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm shadow-sm outline-none transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 md:w-40"
+                    className="h-10 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2.5 text-sm text-gray-900 dark:text-gray-100 shadow-sm outline-none transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 md:w-40"
                   >
                     <option value="Admin">Admin</option>
                     <option value="Editor">Editor</option>
@@ -429,25 +436,25 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <h3 className="mb-4 flex items-center gap-2 text-sm font-bold text-gray-900">
+                <h3 className="mb-4 flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-gray-100">
                   <Shield size={16} className="text-indigo-500" />
                   Active Members
                 </h3>
-                <div className="overflow-hidden divide-y divide-gray-100 rounded-xl border border-gray-100">
+                <div className="overflow-hidden divide-y divide-gray-100 dark:divide-gray-700 rounded-xl border border-gray-100 dark:border-gray-800">
                   {teamMembers.map((member) => (
                     <div
                       key={member.id}
-                      className="flex items-center justify-between bg-white p-4 transition-colors duration-150 hover:bg-gray-50/50"
+                      className="flex items-center justify-between bg-white dark:bg-gray-900 p-4 transition-colors duration-150 hover:bg-gray-50/50 dark:hover:bg-gray-800/50"
                     >
                       <div className="flex items-center gap-4">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full border border-indigo-100 bg-gradient-to-br from-indigo-50 to-purple-50 text-sm font-bold text-indigo-700">
                           {(member.email || '@').charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-gray-900">
+                          <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
                             {member.email}
                             {member.status === 'Pending' && (
-                              <span className="ml-1.5 text-xs font-normal text-gray-500">(Pending)</span>
+                              <span className="ml-1.5 text-xs font-normal text-gray-500 dark:text-gray-400">(Pending)</span>
                             )}
                           </p>
                         </div>
@@ -456,10 +463,10 @@ export default function SettingsPage() {
                         <span
                           className={`rounded-full px-2.5 py-1 text-xs font-medium ${
                             member.role === 'Admin'
-                              ? 'border border-purple-100 bg-purple-50 text-purple-700'
+                              ? 'border border-purple-100 dark:border-purple-900 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
                               : member.role === 'Editor'
-                                ? 'border border-blue-100 bg-blue-50 text-blue-700'
-                                : 'border border-gray-200 bg-gray-50 text-gray-700'
+                                ? 'border border-blue-100 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                                : 'border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
                           }`}
                         >
                           {member.role}
@@ -481,14 +488,14 @@ export default function SettingsPage() {
           )}
 
           {activeTab === 'ai' && (
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm md:p-8">
-              <h2 className="text-lg font-semibold text-slate-900">AI Engine</h2>
-              <p className="mt-1 text-sm text-slate-500">
+            <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm md:p-8">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-100">AI Engine</h2>
+              <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">
                 Configure your AI provider and API keys for content generation.
               </p>
               <div className="mt-6 space-y-4">
                 <div>
-                  <label htmlFor="ai-provider" className="mb-1.5 flex items-center gap-2 text-sm font-medium text-slate-700">
+                  <label htmlFor="ai-provider" className="mb-1.5 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-gray-400">
                     <Bot className="h-4 w-4" />
                     Provider
                   </label>
@@ -496,14 +503,14 @@ export default function SettingsPage() {
                     id="ai-provider"
                     value={aiForm.provider}
                     onChange={(e) => setAiForm((a) => ({ ...a, provider: e.target.value }))}
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   >
                     <option value="groq">Groq</option>
                     <option value="openai">OpenAI</option>
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="ai-api-key" className="mb-1.5 flex items-center gap-2 text-sm font-medium text-slate-700">
+                  <label htmlFor="ai-api-key" className="mb-1.5 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-gray-400">
                     <Key className="h-4 w-4" />
                     API Key
                   </label>
@@ -513,11 +520,11 @@ export default function SettingsPage() {
                     value={aiForm.apiKey}
                     onChange={(e) => setAiForm((a) => ({ ...a, apiKey: e.target.value }))}
                     placeholder="Enter your API key (stored securely)"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 transition-all placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 transition-all placeholder-slate-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <div>
-                  <label htmlFor="ai-model" className="mb-1.5 block text-sm font-medium text-slate-700">
+                  <label htmlFor="ai-model" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-400">
                     Model
                   </label>
                   <input
@@ -526,11 +533,11 @@ export default function SettingsPage() {
                     value={aiForm.model}
                     onChange={(e) => setAiForm((a) => ({ ...a, model: e.target.value }))}
                     placeholder="e.g. llama-3.1-8b-instant"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 transition-all placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 transition-all placeholder-slate-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <div>
-                  <label htmlFor="ai-tone" className="mb-1.5 flex items-center gap-2 text-sm font-medium text-slate-700">
+                  <label htmlFor="ai-tone" className="mb-1.5 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-gray-400">
                     <Sparkles className="h-4 w-4" />
                     Default Tone
                   </label>
@@ -540,7 +547,7 @@ export default function SettingsPage() {
                     onChange={(e) => setAiForm((a) => ({ ...a, tone: e.target.value }))}
                     rows={3}
                     placeholder="Describe the default tone for AI-generated content"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 transition-all placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 transition-all placeholder-slate-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <button
@@ -556,7 +563,7 @@ export default function SettingsPage() {
           )}
 
           {activeTab === 'notifications' && (
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800 md:p-8">
+            <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm md:p-8">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Notifications & General</h2>
               <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 Choose how you want to be notified and customize appearance.

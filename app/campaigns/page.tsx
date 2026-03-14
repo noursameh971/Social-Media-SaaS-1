@@ -281,12 +281,12 @@ export default function CampaignsPage() {
   const uniqueStatuses = [...new Set(campaigns.map((c) => c.status).filter(Boolean))].sort();
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-950 transition-colors duration-200">
       <div className="space-y-8 p-6 lg:p-8">
         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-slate-900">All Campaigns</h1>
-            <p className="mt-1 text-sm text-slate-500">
+            <h1 className="text-2xl font-semibold text-slate-900 dark:text-gray-100">All Campaigns</h1>
+            <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">
               Overview of all marketing campaigns across your clients.
             </p>
           </div>
@@ -316,10 +316,10 @@ export default function CampaignsPage() {
         {loading ? (
           <div className="flex items-center justify-center gap-3 py-24">
             <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-            <span className="text-sm text-slate-500">Loading campaigns...</span>
+            <span className="text-sm text-slate-500 dark:text-gray-400">Loading campaigns...</span>
           </div>
         ) : error ? (
-          <div className="rounded-xl border border-red-200 bg-red-50 px-6 py-4 text-sm text-red-700">
+          <div className="rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-900/30 px-6 py-4 text-sm text-red-700 dark:text-red-300">
             {error}
           </div>
         ) : campaigns.length === 0 ? (
@@ -346,7 +346,7 @@ export default function CampaignsPage() {
                   placeholder="Search campaigns..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-4 text-sm shadow-sm outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 pl-9 pr-4 text-sm text-gray-900 dark:text-gray-100 shadow-sm outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 dark:placeholder-gray-500"
                 />
               </div>
               <select
@@ -364,7 +364,7 @@ export default function CampaignsPage() {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:ring-2 focus:ring-indigo-500 md:w-48"
+                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 shadow-sm outline-none focus:ring-2 focus:ring-indigo-500 md:w-48"
               >
                 <option value="all">All Statuses</option>
                 {uniqueStatuses.map((status) => (
@@ -378,9 +378,9 @@ export default function CampaignsPage() {
               {filteredCampaigns.map((campaign) => (
               <div
                 key={campaign.id}
-                className="group relative rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+                className="group relative rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
               >
-                <div className="absolute right-3 top-3 z-10 flex items-center gap-1 rounded-lg border border-gray-100 bg-white p-1 opacity-0 shadow-sm transition-opacity duration-200 group-hover:opacity-100">
+                <div className="absolute right-3 top-3 z-10 flex items-center gap-1 rounded-lg border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-1 opacity-0 shadow-sm transition-opacity duration-200 group-hover:opacity-100">
                   <button
                     type="button"
                     onClick={() => {
@@ -411,12 +411,12 @@ export default function CampaignsPage() {
                     {campaign.status}
                   </span>
                 </div>
-                <h3 className="text-lg font-bold text-slate-900">{campaign.name}</h3>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-gray-100">{campaign.name}</h3>
                 {campaign.description && (
-                  <p className="mt-2 line-clamp-3 text-sm text-slate-500">{campaign.description}</p>
+                  <p className="mt-2 line-clamp-3 text-sm text-slate-500 dark:text-gray-400">{campaign.description}</p>
                 )}
-                <div className="mt-4 flex items-center gap-2 text-xs text-slate-500">
-                  <Calendar className="h-4 w-4 shrink-0 text-slate-400" />
+                <div className="mt-4 flex items-center gap-2 text-xs text-slate-500 dark:text-gray-400">
+                  <Calendar className="h-4 w-4 shrink-0 text-slate-400 dark:text-gray-500" />
                   {campaign.start_date && campaign.end_date ? (
                     <span>
                       {new Date(campaign.start_date).toLocaleDateString('en-US', {
@@ -445,7 +445,7 @@ export default function CampaignsPage() {
                   )}
                 </div>
 
-                <div className="mt-5 border-t border-gray-100 pt-4">
+                <div className="mt-5 border-t border-gray-100 dark:border-gray-800 pt-4">
                   {(() => {
                     const totalPosts = campaign.content_posts?.length ?? 0;
                     const readyPosts =
@@ -459,10 +459,10 @@ export default function CampaignsPage() {
                       return (
                         <div>
                           <div className="mb-2 flex items-center justify-between text-xs">
-                            <span className="font-medium text-gray-500">Progress</span>
-                            <span className="font-bold text-gray-900">0 / 5 Posts Ready</span>
+                            <span className="font-medium text-gray-500 dark:text-gray-400">Progress</span>
+                            <span className="font-bold text-gray-900 dark:text-gray-100">0 / 5 Posts Ready</span>
                           </div>
-                          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
+                          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
                             <div className="h-full rounded-full bg-emerald-500" style={{ width: '0%' }} />
                           </div>
                           <div className="mt-4 flex items-center justify-between">
@@ -486,12 +486,12 @@ export default function CampaignsPage() {
                     return (
                       <>
                         <div className="mb-2 flex items-center justify-between text-xs">
-                          <span className="font-medium text-gray-500">Progress</span>
-                          <span className="font-bold text-gray-900">
+                          <span className="font-medium text-gray-500 dark:text-gray-400">Progress</span>
+                          <span className="font-bold text-gray-900 dark:text-gray-100">
                             {readyPosts} / {totalPosts} Posts Ready
                           </span>
                         </div>
-                        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
+                        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
                           <div
                             className="h-full rounded-full bg-emerald-500 transition-all duration-500"
                             style={{ width: `${progressPercentage}%` }}
@@ -519,19 +519,19 @@ export default function CampaignsPage() {
 
         {isIdeatorOpen && (
           <div
-            className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-gray-900/40 p-4 backdrop-blur-sm fade-in duration-200"
+            className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-gray-900/40 dark:bg-black/60 p-4 backdrop-blur-sm fade-in duration-200"
             onClick={() => setIsIdeatorOpen(false)}
           >
             <div
-              className="mx-4 max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl animate-in zoom-in-95 md:p-8"
+              className="mx-4 max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-2xl animate-in zoom-in-95 md:p-8"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-slate-900">AI Campaign Ideator</h2>
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-100">AI Campaign Ideator</h2>
                 <button
                   type="button"
                   onClick={() => setIsIdeatorOpen(false)}
-                  className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                  className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-slate-600 dark:hover:text-gray-300"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -554,13 +554,13 @@ export default function CampaignsPage() {
                   </select>
                 </div>
                 <div className="min-w-[160px] flex-1">
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">Theme</label>
+                  <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-400">Theme</label>
                   <input
                     type="text"
                     value={ideatorTheme}
                     onChange={(e) => setIdeatorTheme(e.target.value)}
                     placeholder="e.g. Black Friday Sale"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 placeholder-slate-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <button
@@ -587,7 +587,7 @@ export default function CampaignsPage() {
                 {isGenerating && (
                   <div className="flex flex-col items-center justify-center gap-3 py-16">
                     <Loader2 className="h-10 w-10 animate-spin text-indigo-600" />
-                    <p className="text-sm text-slate-500">Pitching campaign ideas...</p>
+                    <p className="text-sm text-slate-500 dark:text-gray-400">Pitching campaign ideas...</p>
                   </div>
                 )}
                 {!isGenerating && generatedIdeas.length > 0 && (
@@ -595,14 +595,14 @@ export default function CampaignsPage() {
                     {generatedIdeas.map((idea, idx) => (
                       <div
                         key={idx}
-                        className="mb-4 rounded-xl border border-gray-100 bg-gray-50/50 p-5 transition-colors hover:bg-gray-50"
+                        className="mb-4 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 p-5 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
                       >
-                        <h4 className="font-bold text-slate-900">{idea.name}</h4>
-                        <p className="mt-2 text-sm text-gray-600">{idea.description}</p>
+                        <h4 className="font-bold text-slate-900 dark:text-gray-100">{idea.name}</h4>
+                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{idea.description}</p>
                         <button
                           type="button"
                           onClick={() => handleSaveCampaign(idea)}
-                          className="mt-4 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-indigo-200 hover:text-indigo-600"
+                          className="mt-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-100 shadow-sm transition-all hover:border-indigo-200 dark:hover:border-indigo-600 hover:text-indigo-600 dark:hover:text-indigo-400"
                         >
                           Save to Pipeline
                         </button>
@@ -617,40 +617,40 @@ export default function CampaignsPage() {
 
         {modalOpen && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 dark:bg-black/60 p-4 backdrop-blur-sm"
             onClick={() => setModalOpen(false)}
           >
             <div
-              className="w-full max-w-lg rounded-xl border border-slate-200 bg-white p-6 shadow-2xl"
+              className="w-full max-w-lg rounded-xl border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-slate-900">New Campaign</h2>
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-100">New Campaign</h2>
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                  className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-slate-600 dark:hover:text-gray-300"
                 >
                   <X className="h-5 w-5" />
                 </button>
               </div>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">Campaign Name</label>
+                  <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-400">Campaign Name</label>
                   <input
                     type="text"
                     value={form.name}
                     onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                     placeholder="Enter campaign name"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 placeholder-slate-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">Client</label>
+                  <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-400">Client</label>
                   <select
                     value={form.client_id}
                     onChange={(e) => setForm((f) => ({ ...f, client_id: e.target.value }))}
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   >
                     <option value="" disabled>Select client</option>
                     {clients.map((c) => (
@@ -661,52 +661,52 @@ export default function CampaignsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">Description</label>
+                  <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-400">Description</label>
                   <textarea
                     value={form.description}
                     onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                     rows={3}
                     placeholder="Campaign description (optional)"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 placeholder-slate-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="mb-1.5 block text-sm font-medium text-slate-700">Start Date</label>
+                    <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-400">Start Date</label>
                     <input
                       type="date"
                       value={form.start_date}
                       onChange={(e) => setForm((f) => ({ ...f, start_date: e.target.value }))}
-                      className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                      className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                     />
                   </div>
                   <div>
-                    <label className="mb-1.5 block text-sm font-medium text-slate-700">End Date</label>
+                    <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-400">End Date</label>
                     <input
                       type="date"
                       value={form.end_date}
                       onChange={(e) => setForm((f) => ({ ...f, end_date: e.target.value }))}
-                      className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                      className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">Status</label>
+                  <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-400">Status</label>
                   <select
                     value={form.status}
                     onChange={(e) => setForm((f) => ({ ...f, status: e.target.value }))}
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   >
                     <option value="Draft">Draft</option>
                     <option value="Active">Active</option>
                     <option value="Completed">Completed</option>
                   </select>
                 </div>
-                <div className="flex justify-end gap-3 border-t border-slate-100 pt-5">
+                <div className="flex justify-end gap-3 border-t border-slate-100 dark:border-gray-800 pt-5">
                   <button
                     type="button"
                     onClick={() => setModalOpen(false)}
-                    className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                    className="rounded-lg border border-slate-200 dark:border-gray-700 px-4 py-2 text-sm font-medium text-slate-700 dark:text-gray-300 transition-colors hover:bg-slate-50 dark:hover:bg-gray-800"
                   >
                     Cancel
                   </button>
@@ -732,31 +732,31 @@ export default function CampaignsPage() {
 
         {campaignToEdit && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 dark:bg-black/60 p-4 backdrop-blur-sm"
             onClick={() => setCampaignToEdit(null)}
           >
             <div
-              className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
+              className="w-full max-w-md rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-6 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-lg font-bold text-slate-900">Edit Campaign</h3>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-gray-100">Edit Campaign</h3>
               <div className="mt-4 space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">Name</label>
+                  <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-400">Name</label>
                   <input
                     type="text"
                     value={editForm.name}
                     onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))}
-                    className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">Description</label>
+                  <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-400">Description</label>
                   <textarea
                     value={editForm.description}
                     onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))}
                     rows={4}
-                    className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-slate-900 dark:text-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
               </div>
@@ -764,7 +764,7 @@ export default function CampaignsPage() {
                 <button
                   type="button"
                   onClick={() => setCampaignToEdit(null)}
-                  className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                  className="rounded-lg border border-slate-200 dark:border-gray-700 px-4 py-2 text-sm font-medium text-slate-700 dark:text-gray-300 transition-colors hover:bg-slate-50 dark:hover:bg-gray-800"
                 >
                   Cancel
                 </button>
@@ -782,22 +782,22 @@ export default function CampaignsPage() {
 
         {campaignToDelete && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 dark:bg-black/60 p-4 backdrop-blur-sm"
             onClick={() => setCampaignToDelete(null)}
           >
             <div
-              className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl"
+              className="w-full max-w-sm rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-6 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-lg font-bold text-slate-900">Delete Campaign</h3>
-              <p className="mt-2 text-sm text-gray-500">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-gray-100">Delete Campaign</h3>
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                 Are you sure you want to delete &quot;{campaignToDelete.name}&quot;? This action cannot be undone.
               </p>
               <div className="mt-6 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setCampaignToDelete(null)}
-                  className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                  className="rounded-lg border border-slate-200 dark:border-gray-700 px-4 py-2 text-sm font-medium text-slate-700 dark:text-gray-300 transition-colors hover:bg-slate-50 dark:hover:bg-gray-800"
                 >
                   Cancel
                 </button>

@@ -146,12 +146,12 @@ export default function AnalyticsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-950 transition-colors duration-200">
       <div className="space-y-8 p-6 lg:p-8">
         <header className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <h1 className="text-2xl font-semibold text-slate-900">Agency Analytics</h1>
-            <p className="mt-1 text-sm text-slate-500">
+            <h1 className="text-2xl font-semibold text-slate-900 dark:text-gray-100">Agency Analytics</h1>
+            <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">
               Internal stats across content and tasks.
             </p>
           </div>
@@ -169,73 +169,73 @@ export default function AnalyticsPage() {
         {loading ? (
           <div className="flex items-center justify-center gap-3 py-24">
             <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-            <span className="text-sm text-slate-500">Loading analytics...</span>
+            <span className="text-sm text-slate-500 dark:text-gray-400">Loading analytics...</span>
           </div>
         ) : error ? (
-          <div className="rounded-xl border border-red-200 bg-red-50 px-6 py-4 text-sm text-red-700">
+          <div className="rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-900/30 px-6 py-4 text-sm text-red-700 dark:text-red-300">
             {error}
           </div>
         ) : (
           <>
             <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+              <div className="flex items-center gap-4 rounded-xl border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
                   <Layers size={20} />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-500">Total Content Output</p>
-                  <p className="text-2xl font-bold text-slate-900">{kpis.totalContent}</p>
+                  <p className="text-sm font-medium text-slate-500 dark:text-gray-400">Total Content Output</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-gray-100">{kpis.totalContent}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+              <div className="flex items-center gap-4 rounded-xl border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
                   <TrendingUp size={20} />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-500">Publishing Efficiency</p>
-                  <p className="text-2xl font-bold text-slate-900">{kpis.publishRate}%</p>
+                  <p className="text-sm font-medium text-slate-500 dark:text-gray-400">Publishing Efficiency</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-gray-100">{kpis.publishRate}%</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-purple-50 text-purple-600">
+              <div className="flex items-center gap-4 rounded-xl border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
                   <BarChart2 size={20} />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-500">Top Platform</p>
-                  <p className="text-2xl font-bold text-slate-900">{kpis.topPlatform}</p>
+                  <p className="text-sm font-medium text-slate-500 dark:text-gray-400">Top Platform</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-gray-100">{kpis.topPlatform}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-600">
+              <div className="flex items-center gap-4 rounded-xl border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
                   <CheckCircle size={20} />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-500">Task Completion</p>
-                  <p className="text-2xl font-bold text-slate-900">{kpis.taskCompletion}%</p>
+                  <p className="text-sm font-medium text-slate-500 dark:text-gray-400">Task Completion</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-gray-100">{kpis.taskCompletion}%</p>
                 </div>
               </div>
             </div>
 
             {aiInsight && (
-              <div className="relative mb-8 overflow-hidden rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50 to-purple-50 p-6 shadow-sm">
+              <div className="relative mb-8 overflow-hidden rounded-2xl border border-indigo-100 dark:border-indigo-900 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/50 dark:to-purple-950/50 p-6 shadow-sm">
                 <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-indigo-500 to-purple-500" />
                 <div className="flex items-start gap-4">
-                  <div className="mt-1 rounded-full bg-white p-2 text-purple-500 shadow-sm animate-pulse">
+                  <div className="mt-1 rounded-full bg-white dark:bg-gray-800 p-2 text-purple-500 shadow-sm animate-pulse">
                     <Sparkles size={20} />
                   </div>
                   <div>
                     <h3 className="mb-2 bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-sm font-bold uppercase tracking-wider text-transparent">
                       Executive AI Summary
                     </h3>
-                    <p className="font-medium leading-relaxed text-indigo-800">{aiInsight}</p>
+                    <p className="font-medium leading-relaxed text-indigo-800 dark:text-indigo-200">{aiInsight}</p>
                   </div>
                 </div>
               </div>
             )}
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
-              <h2 className="mb-6 text-lg font-semibold text-slate-900">Content by Platform</h2>
+            <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm transition-shadow hover:shadow-md">
+              <h2 className="mb-6 text-lg font-semibold text-slate-900 dark:text-gray-100">Content by Platform</h2>
               <div className="h-[300px] w-full">
                 {platformData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
@@ -266,15 +266,15 @@ export default function AnalyticsPage() {
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="flex h-full items-center justify-center text-sm text-slate-500">
+                  <div className="flex h-full items-center justify-center text-sm text-slate-500 dark:text-gray-400">
                     No content data yet
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
-              <h2 className="mb-6 text-lg font-semibold text-slate-900">Tasks Overview</h2>
+            <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm transition-shadow hover:shadow-md">
+              <h2 className="mb-6 text-lg font-semibold text-slate-900 dark:text-gray-100">Tasks Overview</h2>
               <div className="h-[300px] w-full">
                 {taskData.some((d) => d.value > 0) ? (
                   <ResponsiveContainer width="100%" height="100%">
@@ -307,7 +307,7 @@ export default function AnalyticsPage() {
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="flex h-full min-h-[250px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-6 text-center text-sm text-slate-500">
+                  <div className="flex h-full min-h-[250px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 p-6 text-center text-sm text-slate-500 dark:text-gray-400">
                     No tasks data yet
                   </div>
                 )}

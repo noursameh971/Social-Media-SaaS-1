@@ -159,13 +159,13 @@ export default function DashboardPage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gray-50 transition-colors duration-200 dark:bg-gray-950">
       <div className="space-y-8 p-6 lg:p-8">
         {/* Greeting & Quick Actions */}
         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-slate-900">Welcome back, {userName || 'Team'} 👋</h1>
-            <p className="mt-1 text-sm text-slate-500">{today}</p>
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Welcome back, {userName || 'Team'} 👋</h1>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{today}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Link
@@ -177,7 +177,7 @@ export default function DashboardPage() {
             </Link>
             <Link
               href="/content"
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+              className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
             >
               <Calendar className="h-4 w-4" />
               View Calendar
@@ -189,8 +189,8 @@ export default function DashboardPage() {
         <section className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
           {isLoading ? (
             [...Array(4)].map((_, i) => (
-              <div key={i} className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                <Loader2 className="h-10 w-10 animate-spin text-slate-300" />
+              <div key={i} className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <Loader2 className="h-10 w-10 animate-spin text-gray-300 dark:text-gray-600" />
                 <div className="flex-1 space-y-2">
                   <div className="h-4 w-24 animate-pulse rounded bg-slate-200" />
                   <div className="h-8 w-16 animate-pulse rounded bg-slate-200" />
@@ -199,44 +199,44 @@ export default function DashboardPage() {
             ))
           ) : (
             <>
-              <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                <div className="rounded-2xl bg-blue-50 p-3 text-blue-600">
+              <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <div className="rounded-2xl bg-blue-50 p-3 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
                   <Users className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-500">Total Clients</p>
-                  <p className="text-2xl font-bold text-slate-900">{stats.totalClients}</p>
-                  <p className="mt-1 text-xs text-gray-400">{stats.totalClients > 0 ? '+2 this week' : 'No activity yet'}</p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Clients</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.totalClients}</p>
+                  <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">{stats.totalClients > 0 ? '+2 this week' : 'No activity yet'}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                <div className="rounded-2xl bg-purple-50 p-3 text-purple-600">
+              <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <div className="rounded-2xl bg-purple-50 p-3 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
                   <Megaphone className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-500">Active Campaigns</p>
-                  <p className="text-2xl font-bold text-slate-900">{stats.activeCampaigns}</p>
-                  <p className="mt-1 text-xs text-gray-400">{stats.activeCampaigns > 0 ? '+2 this week' : 'No activity yet'}</p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Active Campaigns</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.activeCampaigns}</p>
+                  <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">{stats.activeCampaigns > 0 ? '+2 this week' : 'No activity yet'}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                <div className="rounded-2xl bg-orange-50 p-3 text-orange-600">
+              <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <div className="rounded-2xl bg-orange-50 p-3 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400">
                   <FileText className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-500">Pending Posts</p>
-                  <p className="text-2xl font-bold text-slate-900">{stats.pendingPosts}</p>
-                  <p className="mt-1 text-xs text-gray-400">{stats.pendingPosts > 0 ? '+2 this week' : 'No activity yet'}</p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Posts</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.pendingPosts}</p>
+                  <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">{stats.pendingPosts > 0 ? '+2 this week' : 'No activity yet'}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                <div className="rounded-2xl bg-emerald-50 p-3 text-emerald-600">
+              <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <div className="rounded-2xl bg-emerald-50 p-3 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
                   <Image className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-500">Brand Assets</p>
-                  <p className="text-2xl font-bold text-slate-900">{stats.totalAssets}</p>
-                  <p className="mt-1 text-xs text-gray-400">{stats.totalAssets > 0 ? '+2 this week' : 'No activity yet'}</p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Brand Assets</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.totalAssets}</p>
+                  <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">{stats.totalAssets > 0 ? '+2 this week' : 'No activity yet'}</p>
                 </div>
               </div>
             </>
@@ -247,38 +247,38 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
           {/* Left Section (Span 2) - Pipeline & Content */}
           <section className="lg:col-span-2">
-            <h2 className="mb-4 text-lg font-semibold text-slate-900">Recent / Upcoming Content</h2>
+            <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Recent / Upcoming Content</h2>
             <div
               className={
                 isLoading
-                  ? 'overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm'
+                  ? 'overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900'
                   : upcomingPosts.length > 0
-                    ? 'overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm'
-                    : 'flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-8'
+                    ? 'overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900'
+                    : 'flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-8 dark:border-gray-700 dark:bg-gray-900/50'
               }
             >
               {isLoading ? (
                 <div className="flex items-center justify-center gap-3 py-16">
                   <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-                  <span className="text-sm text-slate-500">Loading...</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Loading...</span>
                 </div>
               ) : upcomingPosts.length > 0 ? (
                 <table className="w-full table-fixed">
                   <thead>
-                    <tr className="border-b border-gray-100 bg-slate-50/80">
-                      <th className="w-40 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
+                    <tr className="border-b border-gray-100 bg-gray-50/80 dark:border-gray-800 dark:bg-gray-800/50">
+                      <th className="w-40 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
                         Client
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
                         Title
                       </th>
-                      <th className="w-24 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      <th className="w-24 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
                         Platform
                       </th>
-                      <th className="w-24 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      <th className="w-24 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
                         Status
                       </th>
-                      <th className="w-20 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      <th className="w-20 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
                         Action
                       </th>
                     </tr>
@@ -292,19 +292,19 @@ export default function DashboardPage() {
                       return (
                         <tr
                           key={post.id}
-                          className={`transition-colors hover:bg-gray-50/50 ${!isLast ? 'border-b border-gray-100' : ''}`}
+                          className={`transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-800/50 ${!isLast ? 'border-b border-gray-100 dark:border-gray-800' : ''}`}
                         >
                           <td className="whitespace-nowrap px-6 py-4 text-left">
                             <div className="flex items-center gap-3">
                               <div className={`h-8 w-8 shrink-0 rounded-full flex items-center justify-center text-xs font-bold ${bgColor}`}>
                                 {getInitials(clientName)}
                               </div>
-                              <span className="truncate text-sm font-medium text-slate-700">
+                              <span className="truncate text-sm font-medium text-gray-700 dark:text-gray-300">
                                 {clientName}
                               </span>
                             </div>
                           </td>
-                          <td className="truncate whitespace-nowrap px-6 py-4 text-left text-sm text-slate-900">
+                          <td className="truncate whitespace-nowrap px-6 py-4 text-left text-sm text-gray-900 dark:text-gray-100">
                             {post.title}
                           </td>
                           <td className="whitespace-nowrap px-6 py-4 text-center">
@@ -333,7 +333,7 @@ export default function DashboardPage() {
                             <button
                               type="button"
                               onClick={() => setSelectedPost(post)}
-                              className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-800"
+                              className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                             >
                               View
                             </button>
@@ -345,8 +345,8 @@ export default function DashboardPage() {
                 </table>
               ) : (
                 <div className="flex flex-col items-center justify-center text-center">
-                  <Calendar className="h-14 w-14 text-gray-300" />
-                  <p className="mt-4 text-sm text-slate-500">No recent or upcoming content yet</p>
+                  <Calendar className="h-14 w-14 text-gray-300 dark:text-gray-600" />
+                  <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">No recent or upcoming content yet</p>
                   <Link
                     href="/content"
                     className="mt-3 text-sm font-medium text-indigo-600 hover:text-indigo-700"
@@ -364,11 +364,11 @@ export default function DashboardPage() {
             <div
               className={
                 platformData.length > 0
-                  ? 'rounded-2xl border border-gray-100 bg-white p-6 shadow-sm'
-                  : 'flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-8'
+                  ? 'rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900'
+                  : 'flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-8 dark:border-gray-700 dark:bg-gray-900/50'
               }
             >
-              <h3 className="mb-4 text-sm font-semibold text-slate-900">Platform Distribution</h3>
+              <h3 className="mb-4 text-sm font-semibold text-gray-900 dark:text-gray-100">Platform Distribution</h3>
               {platformData.length > 0 ? (
                 <div className="space-y-4">
                   {platformData.map((entry) => {
@@ -381,7 +381,7 @@ export default function DashboardPage() {
                             {entry.value} ({pct}%)
                           </span>
                         </div>
-                        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-gray-100">
+                        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
                           <div
                             className="h-2 rounded-full transition-all duration-300"
                             style={{ width: `${pct}%`, backgroundColor: entry.color }}
@@ -393,8 +393,8 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center text-center">
-                  <FileText className="h-14 w-14 text-gray-300" />
-                  <p className="mt-4 text-sm text-slate-500">No content yet</p>
+                  <FileText className="h-14 w-14 text-gray-300 dark:text-gray-600" />
+                  <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">No content yet</p>
                 </div>
               )}
             </div>
@@ -416,12 +416,12 @@ export default function DashboardPage() {
                     return (
                       <li
                         key={post.id}
-                        className="flex items-center gap-4 rounded-lg border border-amber-100 bg-amber-50/50 px-4 py-3"
+                        className="flex items-center gap-4 rounded-lg border border-amber-100 bg-amber-50/50 px-4 py-3 dark:border-amber-900/50 dark:bg-amber-900/20"
                       >
-                        <AlertCircle className="h-4 w-4 shrink-0 text-amber-600" />
+                        <AlertCircle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
                         <div className="min-w-0 flex-1">
-                          <p className="truncate font-medium text-gray-900">{post.title}</p>
-                          <p className="mt-0.5 text-xs text-gray-500">
+                          <p className="truncate font-medium text-gray-900 dark:text-gray-100">{post.title}</p>
+                          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                             {clientName} · {status}
                           </p>
                         </div>
@@ -449,12 +449,12 @@ export default function DashboardPage() {
         {/* Quick View Modal */}
         {selectedPost && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 p-4 backdrop-blur-sm dark:bg-black/60"
             onClick={() => setSelectedPost(null)}
             role="presentation"
           >
             <div
-              className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
+              className="relative w-full max-w-md rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl dark:border-gray-800 dark:bg-gray-900"
               onClick={(e) => e.stopPropagation()}
               role="dialog"
               aria-modal="true"
@@ -463,7 +463,7 @@ export default function DashboardPage() {
               <button
                 type="button"
                 onClick={() => setSelectedPost(null)}
-                className="absolute right-4 top-4 rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                className="absolute right-4 top-4 rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -483,17 +483,17 @@ export default function DashboardPage() {
                   {selectedPost.status ?? 'idea'}
                 </span>
               </div>
-              <h2 id="quick-view-title" className="mt-4 text-xl font-bold text-slate-900">
+              <h2 id="quick-view-title" className="mt-4 text-xl font-bold text-gray-900 dark:text-gray-100">
                 {selectedPost.title}
               </h2>
-              <div className="mt-4 rounded-xl bg-gray-50 p-4 text-gray-700 whitespace-pre-wrap">
+              <div className="mt-4 rounded-xl bg-gray-50 p-4 text-gray-700 whitespace-pre-wrap dark:bg-gray-800 dark:text-gray-300">
                 {selectedPost.content || 'No content yet'}
               </div>
               <div className="mt-6 flex justify-end">
                 <button
                   type="button"
                   onClick={() => setSelectedPost(null)}
-                  className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100"
+                  className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
                 >
                   Close
                 </button>

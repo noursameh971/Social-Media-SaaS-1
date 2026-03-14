@@ -170,11 +170,11 @@ export default function ContentPage() {
   }
 
   return (
-    <div className="min-h-screen w-full">
-      <div className="mb-6 flex w-full shrink-0 flex-col gap-4 rounded-xl border border-slate-200 bg-white px-4 py-4 shadow-sm sm:px-6 sm:py-5 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+    <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-950 transition-colors duration-200">
+      <div className="mb-6 flex w-full shrink-0 flex-col gap-4 rounded-xl border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 py-4 shadow-sm sm:px-6 sm:py-5 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">All Content</h1>
-          <p className="mt-1 text-sm text-slate-500">Manage your social media posts</p>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-gray-100">All Content</h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">Manage your social media posts</p>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
           <div className="relative w-full md:w-64">
@@ -184,13 +184,13 @@ export default function ContentPage() {
               placeholder="Search posts..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-10 w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-900 shadow-sm placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="h-10 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 pl-9 pr-3 text-sm text-slate-900 dark:text-gray-100 shadow-sm placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
             />
           </div>
           <select
             value={selectedClient}
             onChange={(e) => setSelectedClient(e.target.value)}
-            className="h-10 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            className="h-10 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-slate-700 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           >
             <option value="all">All Clients</option>
             {uniqueClients.map((c) => (
@@ -202,7 +202,7 @@ export default function ContentPage() {
           <select
             value={selectedPlatform}
             onChange={(e) => setSelectedPlatform(e.target.value)}
-            className="h-10 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            className="h-10 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-slate-700 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           >
             <option value="all">All Platforms</option>
             {uniquePlatforms.map((platform) => (
@@ -214,7 +214,7 @@ export default function ContentPage() {
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-slate-50/50 p-4">
+      <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-gray-800 bg-slate-50/50 dark:bg-gray-900/50 p-4">
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="grid min-w-[900px] gap-4" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
             {KANBAN_COLUMNS.map((col) => {
@@ -225,16 +225,16 @@ export default function ContentPage() {
               return (
                 <div
                   key={col.id}
-                  className={`flex min-h-[400px] flex-col rounded-2xl overflow-hidden ${columnPosts.length > 0 ? 'bg-gray-50/30' : ''}`}
+                  className={`flex min-h-[400px] flex-col rounded-2xl overflow-hidden ${columnPosts.length > 0 ? 'bg-gray-50/30 dark:bg-gray-900/30' : ''}`}
                 >
                   <div className={`flex items-center justify-between p-3 ${col.headerBg} rounded-t-xl`}>
                     <div className="flex items-center gap-2">
                       <span className={`h-2 w-2 rounded-full ${col.dotColor}`} />
-                      <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-700">
+                      <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-400">
                         {col.label}
                       </h3>
                     </div>
-                    <span className="rounded-full border border-gray-200 bg-white px-2 py-1 text-xs text-gray-500 shadow-sm">
+                    <span className="rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-2 py-1 text-xs text-gray-500 dark:text-gray-400 shadow-sm">
                       {columnPosts.length}
                     </span>
                   </div>
@@ -245,7 +245,7 @@ export default function ContentPage() {
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                         className={`flex flex-1 flex-col gap-3 p-2 rounded-b-xl ${
-                          snapshot.isDraggingOver ? 'bg-gray-100/50' : columnPosts.length > 0 ? 'bg-gray-50/30' : ''
+                          snapshot.isDraggingOver ? 'bg-gray-100/50 dark:bg-gray-800/50' : columnPosts.length > 0 ? 'bg-gray-50/30 dark:bg-gray-900/30' : ''
                         }`}
                       >
                         {columnPosts.map((post, index) => (
@@ -256,7 +256,7 @@ export default function ContentPage() {
                                 {...dragProvided.draggableProps}
                                 {...dragProvided.dragHandleProps}
                                 onClick={() => openEditModal(post)}
-                                className={`group relative cursor-pointer rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition-all duration-200 ${
+                                className={`group relative cursor-pointer rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm transition-all duration-200 ${
                                   dragSnapshot.isDragging
                                     ? 'rotate-1 cursor-grabbing shadow-lg ring-2 ring-indigo-500/20'
                                     : 'cursor-grab hover:-translate-y-1 hover:shadow-md'
@@ -277,7 +277,7 @@ export default function ContentPage() {
                                     <Trash2 size={14} />
                                   </button>
                                 </div>
-                                <p className="font-semibold text-slate-900">{post.title}</p>
+                                <p className="font-semibold text-slate-900 dark:text-gray-100">{post.title}</p>
                                 <div className="mt-3 flex flex-wrap gap-1.5">
                                   <span
                                     className={`rounded-full border px-2 py-0.5 text-xs font-medium ${
@@ -286,7 +286,7 @@ export default function ContentPage() {
                                   >
                                     {post.platform}
                                   </span>
-                                  <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs text-slate-600">
+                                  <span className="rounded-full border border-slate-200 dark:border-gray-700 bg-slate-50 dark:bg-gray-800 px-2 py-0.5 text-xs text-slate-600 dark:text-gray-400">
                                     {post.format}
                                   </span>
                                 </div>
@@ -297,9 +297,9 @@ export default function ContentPage() {
                         {provided.placeholder}
 
                         {columnPosts.length === 0 && !snapshot.isDraggingOver && (
-                          <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 py-12">
-                            <FileText className="h-10 w-10 text-gray-300" />
-                            <p className="mt-2 text-sm italic text-gray-400">No posts yet</p>
+                          <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 py-12">
+                            <FileText className="h-10 w-10 text-gray-300 dark:text-gray-400" />
+                            <p className="mt-2 text-sm italic text-gray-400 dark:text-gray-500">No posts yet</p>
                           </div>
                         )}
                       </div>
@@ -320,11 +320,11 @@ export default function ContentPage() {
 
       {isEditModalOpen && selectedPost && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 dark:bg-black/60 p-4 backdrop-blur-sm"
           onClick={closeEditModal}
         >
           <div
-            className="w-full max-w-2xl rounded-xl border border-slate-200 bg-white p-6 shadow-2xl"
+            className="w-full max-w-2xl rounded-xl border border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-6 flex flex-wrap gap-2">
@@ -338,7 +338,7 @@ export default function ContentPage() {
               >
                 {selectedPost.platform}
               </span>
-              <span className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-600">
+              <span className="rounded-full bg-slate-100 dark:bg-gray-800 px-3 py-1 text-sm text-slate-600 dark:text-gray-400">
                 {selectedPost.format}
               </span>
             </div>
@@ -358,7 +358,7 @@ export default function ContentPage() {
               </div>
 
               <div>
-                <label htmlFor="edit-content" className="mb-1.5 block text-sm font-medium text-slate-700">
+                <label htmlFor="edit-content" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-gray-400">
                   Content
                 </label>
                 <textarea
@@ -366,7 +366,7 @@ export default function ContentPage() {
                   value={editContent}
                   onChange={(e) => setEditContent(e.target.value)}
                   rows={16}
-                  className="h-64 w-full resize-y rounded-lg border border-slate-200 px-4 py-3 text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  className="h-64 w-full resize-y rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-slate-900 dark:text-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                 />
               </div>
             </div>
@@ -375,7 +375,7 @@ export default function ContentPage() {
               <button
                 type="button"
                 onClick={closeEditModal}
-                className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                className="rounded-lg border border-slate-200 dark:border-gray-700 px-4 py-2 text-sm font-medium text-slate-700 dark:text-gray-300 transition-colors hover:bg-slate-50 dark:hover:bg-gray-800"
               >
                 Cancel
               </button>
@@ -393,14 +393,14 @@ export default function ContentPage() {
       )}
 
       {postToDelete && (
-        <div className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-gray-900/40 duration-200 backdrop-blur-sm fade-in">
-          <div className="mx-4 w-full max-w-sm rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl duration-200 animate-in zoom-in-95 md:p-8">
+        <div className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-gray-900/40 dark:bg-black/60 duration-200 backdrop-blur-sm fade-in">
+          <div className="mx-4 w-full max-w-sm rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-2xl duration-200 animate-in zoom-in-95 md:p-8">
             <div className="mb-2 flex items-center gap-4">
               <div className="rounded-2xl bg-red-50 p-3 text-red-600">
                 <AlertTriangle size={24} />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900">Delete Post</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Delete Post</h3>
               </div>
             </div>
             <p className="mb-6 mt-2 text-sm text-gray-500">
@@ -410,7 +410,7 @@ export default function ContentPage() {
               <button
                 type="button"
                 onClick={() => setPostToDelete(null)}
-                className="rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+                className="rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-200 dark:hover:bg-gray-700"
               >
                 Cancel
               </button>

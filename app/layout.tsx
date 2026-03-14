@@ -28,13 +28,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 text-gray-900 transition-colors duration-200 dark:bg-gray-950 dark:text-gray-100`}
       >
         <ThemeProvider>
           <Toaster position="top-right" />
           <Sidebar />
           <main
-            className="min-h-screen w-full bg-slate-50 px-4 pb-4 pt-16 dark:bg-slate-900 sm:px-6 sm:pb-6 lg:ml-[240px] lg:w-[calc(100vw-240px)] lg:p-8 lg:pt-8"
+            className="min-h-screen w-full bg-gray-50 px-4 pb-4 pt-16 transition-colors duration-200 dark:bg-gray-950 sm:px-6 sm:pb-6 lg:ml-[240px] lg:w-[calc(100vw-240px)] lg:p-8 lg:pt-8"
           >
             {children}
           </main>
